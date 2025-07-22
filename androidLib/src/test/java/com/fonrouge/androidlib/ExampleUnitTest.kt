@@ -1,4 +1,4 @@
-package com.example.androidlib
+package com.fonrouge.androidlib
 
 import org.junit.Test
 
