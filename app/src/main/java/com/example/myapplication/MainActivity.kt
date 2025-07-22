@@ -19,8 +19,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.androidlib.helloResponse
 //import com.example.androidlib.helloResponse
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import com.fonrouge.fsLib.common.ICommonContainer
+import com.fonrouge.fsLib.model.base.BaseDoc
+import com.fonrouge.fsLib.model.valueMapEntry
+import com.fonrouge.fsLib.mongoDb.Coll
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +46,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
+    val x: BaseDoc<String>
     var clicked by remember { mutableStateOf(false) }
     Column(
         modifier = modifier.fillMaxSize(),
@@ -53,8 +59,8 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
             }
         ) {
             if (clicked)
-//                Text(text = helloResponse("Teo"))
-                Text(text = "Teo")
+                Text(text = helloResponse("Teo"))
+//                Text(text = "Teo")
             else
                 Text(text = "Click me")
         }

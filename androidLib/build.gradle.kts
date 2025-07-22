@@ -31,27 +31,26 @@ android {
     kotlinOptions {
         jvmTarget = "21"
     }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            excludes += "META-INF/INDEX.LIST"
+//    packaging {
+//        resources.excludes.add("META-INF/**")
+//    }
+    publishing {
+        singleVariant("release") {
         }
     }
 }
 
 dependencies {
-    implementation(libs.fonrouge.fslib) {
-        exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
-        exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-common")
-        exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-jdk7")
-        exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-jdk8")
-    }
+    compileOnly(libs.fonrouge.fslib)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // solves: Could not resolve com.google.guava:listenablefuture:1.0
+    implementation(libs.google.guava)
 }
 
 project.afterEvaluate {
