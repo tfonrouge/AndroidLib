@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.myapplication"
+    namespace = "com.fonrouge.myapplication"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.myapplication"
+        applicationId = "com.fonrouge.myapplication"
         minSdk = 30
         targetSdk = 36
         versionCode = 1
@@ -43,7 +43,6 @@ android {
 }
 
 dependencies {
-    compileOnly(libs.fonrouge.fslib)
     implementation(project(":androidLib"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

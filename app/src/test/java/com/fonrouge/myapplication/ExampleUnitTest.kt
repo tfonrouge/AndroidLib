@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.fonrouge.myapplication
 
 import org.junit.Test
 

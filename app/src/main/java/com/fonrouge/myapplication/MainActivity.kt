@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.fonrouge.androidlib.helloResponse
+import com.fonrouge.fsLib.model.base.BaseDoc
 import com.fonrouge.myapplication.ui.theme.MyApplicationTheme
 
 class MainActivity : ComponentActivity() {
@@ -39,8 +40,19 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+data class Person(
+    override val _id: String,
+    val name: String,
+    val age: Int
+) : BaseDoc<String>
+
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
+    val person = Person(
+        _id = "1",
+        name = name,
+        age = 20
+    )
     var clicked by remember { mutableStateOf(false) }
     Column(
         modifier = modifier.fillMaxSize(),
@@ -53,8 +65,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
             }
         ) {
             if (clicked)
-                Text(text = helloResponse("Teo"))
-//                Text(text = "Teo")
+                Text(text = helloResponse(person.name))
             else
                 Text(text = "Click me")
         }
