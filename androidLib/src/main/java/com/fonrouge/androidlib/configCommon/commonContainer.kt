@@ -153,7 +153,37 @@ suspend fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT
     onResponse?.let { it(itemState) }
     return itemState
 }
-
+/**
+ * Defines a composable screen for displaying or editing a single item within a navigation graph.
+ *
+ * This function simplifies the creation of a navigation destination that handles
+ * receiving an `ApiItem.Query` object (representing an item to be displayed or a
+ * new item to be created) as a navigation argument. It automatically decodes
+ * the argument and provides it to your composable content.
+ *
+ * @param CC The type of the `ICommonContainer` which provides configuration for the item.
+ * @param T The type of the data item (`BaseDoc`).
+ * @param ID The type of the ID of the data item.
+ * @param FILT The type of the API filter associated with this item.
+ * @param commonContainer An instance of `ICommonContainer` that holds configuration
+ *   details such as the route name and serializers for the item and its filter.
+ *   The `routeItem` property of this container will be used to define the
+ *   navigation route (e.g., "ViewItemMyEntity?apiItem={apiItem}").
+ * @param function1 A composable lambda that receives an `AnimatedContentScope` and
+ *   the decoded `ApiItem.Query<T, ID, FILT>` as parameters. This lambda is
+ *   responsible for defining the UI content of the screen for the given item.
+ *   The `ApiItem.Query` can represent an existing item fetched for display/editing
+ *   or a new item scaffold if the user is creating a new entry.
+ *
+ * @see ICommonContainer.routeItem
+ * @see ICommonContainer.DecodeRouteItemParams
+ * @see com.fonrouge.androidlib.configCommon.navigateItem
+ * @see com.fonrouge.androidlib.configCommon.navigateCreateItem
+ *
+ * @usage
+ *
+ *
+ */
 @Suppress("unused")
 fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiFilter<*>> NavGraphBuilder.composableItem(
     commonContainer: CC,
