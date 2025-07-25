@@ -14,9 +14,9 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.fonrouge.androidlib.commonServices.AppApi
+import com.fonrouge.androidlib.domain.BasePagingSource
 import com.fonrouge.fsLib.common.ICommonContainer
 import com.fonrouge.fsLib.common.toIApiItem
-import com.fonrouge.androidlib.domain.BasePagingSource
 import com.fonrouge.fsLib.model.apiData.ApiItem
 import com.fonrouge.fsLib.model.apiData.ApiList
 import com.fonrouge.fsLib.model.apiData.IApiFilter
@@ -107,7 +107,7 @@ abstract class VMList<CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : 
         item: T,
     ) {
         itemStateFun?.let { itemStateFun ->
-            val apiItem = ApiItem.Delete.Query<T, ID, FILT>(
+            val apiItem = ApiItem.Query.Delete<T, ID, FILT>(
                 id = item._id,
                 apiFilter = apiFilter,
             )
@@ -115,7 +115,7 @@ abstract class VMList<CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : 
             if (itemState.hasError.not()) {
                 itemState = itemStateFun(
                     commonContainer.toIApiItem(
-                        ApiItem.Delete.Action(
+                        ApiItem.Action.Delete(
                             item = item,
                             apiFilter = apiFilter,
                         )

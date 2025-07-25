@@ -2,11 +2,11 @@ package com.fonrouge.androidlib.domain
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.fonrouge.androidlib.viewModel.VMList
 import com.fonrouge.fsLib.common.ICommonContainer
 import com.fonrouge.fsLib.model.apiData.IApiFilter
 import com.fonrouge.fsLib.model.base.BaseDoc
 import com.fonrouge.fsLib.model.state.SimpleState
-import com.fonrouge.androidlib.viewModel.VMList
 import java.io.IOException
 
 class BasePagingSource<CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiFilter<*>>(

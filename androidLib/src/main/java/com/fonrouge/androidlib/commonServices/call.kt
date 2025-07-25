@@ -1,7 +1,6 @@
 package com.fonrouge.androidlib.commonServices
 
 import android.util.Log
-import androidx.camera.core.ExperimentalGetImage
 import com.fonrouge.fsLib.commonServices.IApiCommonService
 import io.ktor.client.call.body
 import io.ktor.client.network.sockets.ConnectTimeoutException
@@ -33,7 +32,6 @@ inline fun <reified PAR> serialize(value: PAR): String {
  *
  * @return the URL string for the API service and calling function.
  */
-@ExperimentalGetImage
 fun <A : IApiCommonService> A.urlString(): String =
     this::class.simpleName?.let { apiServiceName ->
         val callerFuncName = Thread.currentThread().stackTrace[3].methodName
@@ -193,7 +191,6 @@ suspend inline fun <A : IApiCommonService, reified PAR1, reified PAR2, reified P
  * @throws ConnectTimeoutException if there is a connect timeout during the API call.
  * @throws Exception if there is any other error during the API call.
  */
-@ExperimentalGetImage
 @Suppress("unused")
 suspend inline fun <A : IApiCommonService, reified RET : Any> A.remoteCall(params: List<String?>): RET {
     val urlString = urlString()

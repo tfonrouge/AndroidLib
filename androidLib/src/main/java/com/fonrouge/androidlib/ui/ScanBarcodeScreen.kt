@@ -1,12 +1,9 @@
 package com.fonrouge.androidlib.ui
 
-import androidx.annotation.OptIn
-import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.runtime.Composable
 import com.fonrouge.androidlib.viewModel.VMCamera
 import com.google.mlkit.vision.barcode.common.Barcode
 
-@OptIn(ExperimentalGetImage::class)
 @Composable
 fun ScanBarcodeScreen(
     vmCamera: VMCamera,

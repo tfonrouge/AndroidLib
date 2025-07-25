@@ -1,7 +1,6 @@
 package com.fonrouge.androidlib.ui
 
 import android.content.Context
-import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
@@ -10,7 +9,6 @@ import com.fonrouge.androidlib.viewModel.VMCamera
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 
-@OptIn(ExperimentalGetImage::class)
 @Composable
 fun GmsScanScreen(
     vmCamera: VMCamera = viewModel(),

@@ -1,7 +1,6 @@
 package com.fonrouge.androidlib.commonServices
 
 import android.util.Log
-import androidx.camera.core.ExperimentalGetImage
 import com.fonrouge.fsLib.commonServices.UserLogin
 import com.fonrouge.fsLib.model.base.IUser
 import com.fonrouge.fsLib.model.state.ItemState
@@ -29,7 +28,6 @@ import io.ktor.http.parameters
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-@ExperimentalGetImage
 object AppApi {
     var version: String = "0.0"
     var urlBase: String = "localhost"

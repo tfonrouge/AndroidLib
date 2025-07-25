@@ -1,11 +1,12 @@
 [versions]
 accompanistPermissions = "0.37.3"
 agp = "8.11.1"
+arellib = "2.1.0"
 barcodeScanning = "17.3.0"
 cameraCamera2 = "1.4.2"
 composeMaterial3Pullrefresh = "1.1.1"
 androidLib = "1.0.0"
-fsLib = "1.7.0"
+fsLib = "1.7.1"
 guava = "33.4.8-android"
 kotlin = "2.2.0"
 ktor = "3.2.2"
@@ -26,6 +27,7 @@ playServicesCodeScanner = "16.1.0"
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+com-fonrouge-arellib = { module = "com.fonrouge.arelLib:arelLib", version.ref = "arellib" }
 google-guava = { module = "com.google.guava:guava", version.ref = "guava" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

@@ -1,7 +1,6 @@
 package com.fonrouge.androidlib.viewModel
 
 import android.media.ToneGenerator
-import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -11,7 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.Serializable
 
-@ExperimentalGetImage
 class VMCamera : ViewModel() {
 
     companion object {

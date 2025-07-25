@@ -9,8 +9,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.fonrouge.fsLib.common.ICommonContainer
 import com.fonrouge.fsLib.common.toIApiItem
-import com.fonrouge.fsLib.model.apiData.*
 import com.fonrouge.fsLib.model.apiData.ApiItem
+import com.fonrouge.fsLib.model.apiData.CrudTask
+import com.fonrouge.fsLib.model.apiData.IApiFilter
+import com.fonrouge.fsLib.model.apiData.IApiItem
+import com.fonrouge.fsLib.model.apiData.setMasterItemId
 import com.fonrouge.fsLib.model.base.BaseDoc
 import com.fonrouge.fsLib.model.state.ItemState
 import kotlinx.serialization.builtins.nullable
@@ -23,18 +26,16 @@ val ICommonContainer<*, *, *>.routeList: String get() = "ViewList$name?apiFilter
 @Composable
 fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiFilter<*>> CC.DecodeRouteItemParams(
     navBackStackEntry: NavBackStackEntry,
-    function: @Composable (apiItem: ApiItem<T, ID, FILT>) -> Unit,
+    function: @Composable (apiItem: ApiItem.Query<T, ID, FILT>) -> Unit,
 ) {
-    /*
-        val iApiItem = navBackStackEntry.arguments?.getString("apiItem")?.let {
-            if (it != "\"null\"") Json.decodeFromString(
-                IApiItem.Query.serializer(itemSerializer, idSerializer, apiFilterSerializer),
-                it.removePrefix("\"").removeSuffix("\"")
-            ) else null
-        }
-        val apiItem = iApiItem?.asApiItem(this) as? ApiItem.Query<T, ID, FILT>
-        apiItem?.let { function(apiItem) }
-    */
+    val iApiItem = navBackStackEntry.arguments?.getString("apiItem")?.let {
+        if (it != "\"null\"") Json.decodeFromString(
+            IApiItem.Query.serializer(itemSerializer, idSerializer, apiFilterSerializer),
+            it.removePrefix("\"").removeSuffix("\"")
+        ) else null
+    }
+    val apiItem = iApiItem?.asApiItem(cc = this, call = null) as? ApiItem.Query<T, ID, FILT>
+    apiItem?.let { function(apiItem) }
 }
 
 @Composable
@@ -67,32 +68,28 @@ fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiF
 @Suppress("unused")
 fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiFilter<*>> CC.navigateItem(
     navHostController: NavHostController,
-//    apiItem: ApiItem.Query<T, ID, FILT>,
+    apiItem: ApiItem.Query<T, ID, FILT>,
 ) {
-    /*
-        val serializedApiItem = Json.encodeToString(
-            IApiItem.serializer(itemSerializer, idSerializer, apiFilterSerializer),
-            toIApiItem(apiItem)
-        )
-        navHostController.navigate(
-            "ViewItem$name?apiItem=\"${Uri.encode(serializedApiItem)}\""
-        )
-    */
+    val serializedApiItem = Json.encodeToString(
+        IApiItem.serializer(itemSerializer, idSerializer, apiFilterSerializer),
+        toIApiItem(apiItem)
+    )
+    navHostController.navigate(
+        "ViewItem$name?apiItem=\"${Uri.encode(serializedApiItem)}\""
+    )
 }
 
 fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiFilter<*>> CC.navigateCreateItem(
     navHostController: NavHostController,
     apiFilter: FILT = apiFilterInstance(),
 ) {
-    /*
-        val serializedApiItem = Json.encodeToString(
-            IApiItem.serializer(itemSerializer, idSerializer, apiFilterSerializer),
-            toIApiItem(ApiItem.Query.Upsert.Create(apiFilter = apiFilter))
-        )
-        navHostController.navigate(
-            "ViewItem$name?apiItem=\"${Uri.encode(serializedApiItem)}\""
-        )
-    */
+    val serializedApiItem = Json.encodeToString(
+        IApiItem.serializer(itemSerializer, idSerializer, apiFilterSerializer),
+        toIApiItem(ApiItem.Query.Create(apiFilter = apiFilter))
+    )
+    navHostController.navigate(
+        "ViewItem$name?apiItem=\"${Uri.encode(serializedApiItem)}\""
+    )
 }
 
 /**
@@ -160,17 +157,15 @@ suspend fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT
 @Suppress("unused")
 fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiFilter<*>> NavGraphBuilder.composableItem(
     commonContainer: CC,
-//    function: @Composable AnimatedContentScope.(ApiItem.Query<T, ID, FILT>) -> Unit,
+    function1: @Composable AnimatedContentScope.(ApiItem.Query<T, ID, FILT>) -> Unit,
 ) {
-    /*
-        composable(commonContainer.routeItem) { navBackStackEntry ->
-            commonContainer.DecodeRouteItemParams(
-                navBackStackEntry = navBackStackEntry,
-            ) {
-                function(it)
-            }
+    composable(commonContainer.routeItem) { navBackStackEntry ->
+        commonContainer.DecodeRouteItemParams(
+            navBackStackEntry = navBackStackEntry,
+        ) { it ->
+            function1(it)
         }
-    */
+    }
 }
 
 @Suppress("unused")

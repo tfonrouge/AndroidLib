@@ -20,7 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.fonrouge.androidlib.helloResponse
+import com.fonrouge.arelLib.model.Almacen
 import com.fonrouge.fsLib.model.base.BaseDoc
+import com.fonrouge.fsLib.types.StringId
 import com.fonrouge.myapplication.ui.theme.MyApplicationTheme
 
 class MainActivity : ComponentActivity() {
@@ -48,6 +50,12 @@ data class Person(
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
+    val almacen = Almacen(
+        _id = StringId("1"),
+        clave = "UNO",
+        nombre = "Almacen UNO"
+    )
+    println(almacen)
     val person = Person(
         _id = "1",
         name = name,

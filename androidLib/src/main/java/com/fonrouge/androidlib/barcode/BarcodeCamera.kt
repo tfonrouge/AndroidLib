@@ -8,6 +8,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.annotation.OptIn
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
@@ -34,7 +35,6 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.Executors
 
-@ExperimentalGetImage
 class BarcodeCamera {
 
     private var camera: Camera? = null
@@ -84,6 +84,7 @@ class BarcodeCamera {
         )
     }
 
+    @OptIn(ExperimentalGetImage::class)
     private fun startCamera(
         context: Context,
         previewView: PreviewView,
@@ -167,6 +168,7 @@ class BarcodeCamera {
         camera?.cameraControl?.enableTorch(isOn)
     }
 
+    @ExperimentalGetImage
     private fun processImageProxy(
         barcodeScanner: BarcodeScanner,
         imageProxy: ImageProxy,
