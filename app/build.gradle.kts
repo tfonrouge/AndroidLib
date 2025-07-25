@@ -44,8 +44,8 @@ android {
 
 dependencies {
 //    implementation(project(":androidLib"))
-    implementation(libs.fonrouge.androidLib)
-    implementation(libs.com.fonrouge.arellib)
+    implementation(libs.fonrouge.androidlib)
+    implementation(libs.fonrouge.arellib)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
