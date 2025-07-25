@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.fonrouge.androidlib.helloResponse
+import com.fonrouge.androidlib.viewModel.VMItem
 import com.fonrouge.arelLib.model.Almacen
 import com.fonrouge.fsLib.model.base.BaseDoc
 import com.fonrouge.fsLib.types.StringId
@@ -50,6 +51,7 @@ data class Person(
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
+    val vm: VMItem<*,*,*,*>? = null
     val almacen = Almacen(
         _id = StringId("1"),
         clave = "UNO",
