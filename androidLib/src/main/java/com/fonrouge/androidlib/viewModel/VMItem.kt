@@ -112,7 +112,6 @@ abstract class VMItem<CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : 
             CrudTask.Update -> ApiItem.Action.Update(
                 item = item,
                 apiFilter = apiFilter,
-                orig = null,
             )
 
             CrudTask.Delete -> ApiItem.Action.Delete(
