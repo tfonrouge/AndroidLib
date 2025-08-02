@@ -39,6 +39,8 @@ android {
 //    }
     publishing {
         singleVariant("release") {
+            withSourcesJar()
+//            withJavadocJar()
         }
     }
 }
@@ -100,12 +102,4 @@ project.afterEvaluate {
             }
         }
     }
-    /*
-        repositories {
-            maven {
-                name = "myrepo"
-                url = uri(layout.buildDirectory.dir("repo"))
-            }
-        }
-    */
 }
