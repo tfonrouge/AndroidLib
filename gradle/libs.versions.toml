@@ -6,6 +6,7 @@ barcodeScanning = "17.3.0"
 cameraCamera2 = "1.4.2"
 composeMaterial3Pullrefresh = "1.1.1"
 androidLib = "1.0.0"
+desugar_jdk_libs = "2.1.5"
 fsLib = "1.7.6"
 guava = "33.4.8-android"
 kotlin = "2.2.0"
@@ -15,6 +16,7 @@ junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.9.2"
+logbackClassic = "1.5.18"
 navigationCompose = "2.9.3"
 activityCompose = "1.10.1"
 composeBom = "2025.07.00"
@@ -23,10 +25,12 @@ material = "1.12.0"
 material3 = "1.3.2"
 pagingCompose = "3.3.6"
 playServicesCodeScanner = "16.1.0"
+slf4jAndroid = "1.7.36"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 google-guava = { module = "com.google.guava:guava", version.ref = "guava" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -62,12 +66,14 @@ ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "kto
 ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logbackClassic" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingCompose" }
 play-services-code-scanner = { module = "com.google.android.gms:play-services-code-scanner", version.ref = "playServicesCodeScanner" }
+slf4j-android = { module = "org.slf4j:slf4j-android", version.ref = "slf4jAndroid" }
 ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 
@@ -76,4 +82,5 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 

@@ -71,14 +71,14 @@ dependencies {
 
     api(libs.barcode.scanning)
 
-    implementation(libs.ktor.client.cio)
-    implementation(libs.ktor.client.okhttp)
-    implementation(libs.ktor.client.android)
-    implementation(libs.ktor.client.auth)
-    implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.client.serialization)
-    implementation(libs.ktor.client.logging)
+    api(libs.ktor.client.cio)
+    api(libs.ktor.client.okhttp)
+    api(libs.ktor.client.android)
+    api(libs.ktor.client.auth)
+    api(libs.ktor.client.content.negotiation)
+    api(libs.ktor.serialization.kotlinx.json)
+    api(libs.ktor.client.serialization)
+    api(libs.ktor.client.logging)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
