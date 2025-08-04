@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.serialization)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
@@ -42,10 +43,16 @@ android {
     }
 }
 
+configurations.all {
+    exclude(group = "ch.qos.logback", module = "logback-classic")
+    exclude(group = "ch.qos.logback", module = "logback-core")
+}
+
 dependencies {
-//    implementation(project(":androidLib"))
-    implementation(libs.fonrouge.androidlib)
+    implementation(project(":androidLib"))
     implementation(libs.fonrouge.arellib)
+    implementation(libs.slf4j.android)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
