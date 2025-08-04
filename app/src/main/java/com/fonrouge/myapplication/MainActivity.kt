@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +27,27 @@ import com.fonrouge.arelLib.model.Almacen
 import com.fonrouge.fsLib.model.base.BaseDoc
 import com.fonrouge.fsLib.types.StringId
 import com.fonrouge.myapplication.ui.theme.MyApplicationTheme
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.android.Android
+import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +88,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         age = 20
     )
     var clicked by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -73,11 +96,15 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     ) {
         Button(
             onClick = {
+                CoroutineScope(scope.coroutineContext).launch {
+                    attemptLogin()
+                }
                 clicked = !clicked
             }
         ) {
-            if (clicked)
+            if (clicked) {
                 Text(text = helloResponse(person.name))
+            }
             else
                 Text(text = "Click me")
         }
@@ -89,5 +116,68 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 fun GreetingPreview() {
     MyApplicationTheme {
         Greeting("Android")
+    }
+}
+
+val httpClient = HttpClient(Android) {
+    // Optional: Install Logging for debugging
+    install(Logging) {
+        level = LogLevel.ALL
+    }
+
+    // Configure the Android engine (optional)
+    engine {
+        connectTimeout = 10_000 // 10 seconds
+        socketTimeout = 10_000 // 10 seconds
+    }
+
+    // Install ContentNegotiation for JSON serialization/deserialization
+    install(ContentNegotiation) {
+        json(Json {
+            prettyPrint = true
+            ignoreUnknownKeys = true
+        })
+    }
+
+    install(DefaultRequest) {
+        contentType(ContentType.Application.Json)
+    }
+
+    // Optional: Default request settings
+    defaultRequest {
+        // Example: Add a default header
+        // header("Authorization", "Bearer your_token")
+    }
+}
+
+@Serializable
+data class Post(val id: Int, val title: String, val body: String)
+
+suspend fun attemptLogin() {
+    withContext(Dispatchers.IO) {
+        try {
+            // GET request
+            val response: HttpResponse =
+                httpClient.get("https://jsonplaceholder.typicode.com/posts/1")
+            val post = response.bodyAsText() // Or response.body<Post>() if using ContentNegotiation
+
+            println("Fetched post: $post")
+
+            // POST request
+            val newPost =
+                Post(id = 101, title = "My New Post", body = "This is the body of my new post.")
+            val postResponse: HttpResponse? = try {
+                httpClient.post("https://jsonplaceholder.typicode.com/posts") {
+                    setBody(newPost)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                throw e
+            }
+            println("Post response status: ${postResponse?.status?.value}")
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }
