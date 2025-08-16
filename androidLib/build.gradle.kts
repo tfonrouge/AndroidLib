@@ -67,7 +67,7 @@ dependencies {
 
     implementation(libs.play.services.code.scanner)
 
-    implementation(libs.compose.material3.pullrefresh)
+    api(libs.compose.material3.pullrefresh)
 
     api(libs.barcode.scanning)
 
