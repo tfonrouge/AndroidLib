@@ -23,9 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.fonrouge.androidLib.commonServices.AppApi
 import com.fonrouge.androidLib.helloResponse
 import com.fonrouge.androidLib.viewModel.VMItem
-import com.fonrouge.arelLib.model.Almacen
 import com.fonrouge.fsLib.model.base.BaseDoc
-import com.fonrouge.fsLib.types.StringId
 import com.fonrouge.myapplication.ui.theme.MyApplicationTheme
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
@@ -76,12 +74,6 @@ data class Person(
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     AppApi.urlBase = "http://192.168.1.1:3000"
     val vm: VMItem<*, *, *, *>? = null
-    val almacen = Almacen(
-        _id = StringId("1"),
-        clave = "UNO",
-        nombre = "Almacen UNO"
-    )
-    println(almacen)
     val person = Person(
         _id = "1",
         name = name,
@@ -104,8 +96,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         ) {
             if (clicked) {
                 Text(text = helloResponse(person.name))
-            }
-            else
+            } else
                 Text(text = "Click me")
         }
     }

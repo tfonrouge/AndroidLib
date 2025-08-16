@@ -50,7 +50,6 @@ configurations.all {
 
 dependencies {
     implementation(project(":androidLib"))
-    implementation(libs.fonrouge.arellib)
     implementation(libs.slf4j.android)
 
     implementation(libs.androidx.core.ktx)
