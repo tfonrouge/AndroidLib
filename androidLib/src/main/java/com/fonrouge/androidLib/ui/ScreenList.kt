@@ -30,9 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.fonrouge.androidLib.viewModel.VMList
-import com.fonrouge.fsLib.common.ICommonContainer
-import com.fonrouge.fsLib.model.apiData.IApiFilter
-import com.fonrouge.fsLib.model.base.BaseDoc
+import com.fonrouge.base.api.IApiFilter
+import com.fonrouge.base.common.ICommonContainer
+import com.fonrouge.base.model.BaseDoc
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Suppress("unused")

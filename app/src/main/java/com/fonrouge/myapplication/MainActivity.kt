@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.fonrouge.androidLib.commonServices.AppApi
 import com.fonrouge.androidLib.helloResponse
 import com.fonrouge.androidLib.viewModel.VMItem
-import com.fonrouge.fsLib.model.base.BaseDoc
+import com.fonrouge.base.model.BaseDoc
 import com.fonrouge.myapplication.ui.theme.MyApplicationTheme
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android

@@ -7,15 +7,15 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import com.fonrouge.fsLib.common.ICommonContainer
-import com.fonrouge.fsLib.common.toIApiItem
-import com.fonrouge.fsLib.model.apiData.ApiItem
-import com.fonrouge.fsLib.model.apiData.CrudTask
-import com.fonrouge.fsLib.model.apiData.IApiFilter
-import com.fonrouge.fsLib.model.apiData.IApiItem
-import com.fonrouge.fsLib.model.apiData.setMasterItemId
-import com.fonrouge.fsLib.model.base.BaseDoc
-import com.fonrouge.fsLib.model.state.ItemState
+import com.fonrouge.base.api.ApiItem
+import com.fonrouge.base.api.CrudTask
+import com.fonrouge.base.api.IApiFilter
+import com.fonrouge.base.api.IApiItem
+import com.fonrouge.base.api.setMasterItemId
+import com.fonrouge.base.common.ICommonContainer
+import com.fonrouge.base.common.toIApiItem
+import com.fonrouge.base.model.BaseDoc
+import com.fonrouge.base.state.ItemState
 import kotlinx.serialization.builtins.nullable
 import kotlinx.serialization.json.Json
 import kotlin.reflect.KSuspendFunction1
@@ -153,6 +153,7 @@ suspend fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT
     onResponse?.let { it(itemState) }
     return itemState
 }
+
 /**
  * Defines a composable screen for displaying or editing a single item within a navigation graph.
  *

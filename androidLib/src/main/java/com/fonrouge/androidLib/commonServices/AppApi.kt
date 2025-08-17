@@ -1,10 +1,10 @@
 package com.fonrouge.androidLib.commonServices
 
 import android.util.Log
-import com.fonrouge.fsLib.commonServices.UserLogin
-import com.fonrouge.fsLib.model.base.IUser
-import com.fonrouge.fsLib.model.state.ItemState
-import com.fonrouge.fsLib.model.state.SimpleState
+import com.fonrouge.base.commonServices.UserLogin
+import com.fonrouge.base.model.IUser
+import com.fonrouge.base.state.ItemState
+import com.fonrouge.base.state.SimpleState
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body

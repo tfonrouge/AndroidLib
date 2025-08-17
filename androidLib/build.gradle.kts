@@ -46,7 +46,7 @@ android {
 }
 
 dependencies {
-    api(libs.fonrouge.fslib)
+    api(libs.fonrouge.base)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

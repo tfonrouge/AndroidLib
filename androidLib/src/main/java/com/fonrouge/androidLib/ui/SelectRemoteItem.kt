@@ -26,7 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
-import com.fonrouge.fsLib.model.base.BaseDoc
+import com.fonrouge.base.model.BaseDoc
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

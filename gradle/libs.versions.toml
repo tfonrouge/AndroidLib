@@ -7,7 +7,7 @@ cameraCamera2 = "1.4.2"
 composeMaterial3Pullrefresh = "1.1.1"
 androidLib = "1.0.0"
 desugar_jdk_libs = "2.1.5"
-fsLib = "1.7.6"
+fsLib = "1.7.8"
 guava = "33.4.8-android"
 kotlin = "2.2.10"
 ktor = "3.2.3"
@@ -53,7 +53,7 @@ barcode-scanning = { module = "com.google.mlkit:barcode-scanning", version.ref =
 compose-material3-pullrefresh = { module = "eu.bambooapps:compose-material3-pullrefresh", version.ref = "composeMaterial3Pullrefresh" }
 fonrouge-androidlib = { module = "com.fonrouge:androidLib", version.ref = "androidLib" }
 fonrouge-arellib = { module = "com.fonrouge.arelLib:arelLib", version.ref = "arellib" }
-fonrouge-fslib = { module = "com.fonrouge.fsLib:fsLib", version.ref = "fsLib" }
+fonrouge-base = { module = "com.fonrouge.fsLib:base", version.ref = "fsLib" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }

@@ -1,7 +1,7 @@
 package com.fonrouge.androidLib.commonServices
 
 import android.util.Log
-import com.fonrouge.fsLib.commonServices.IApiCommonService
+import com.fonrouge.base.commonServices.IApiCommonService
 import io.ktor.client.call.body
 import io.ktor.client.network.sockets.ConnectTimeoutException
 import io.ktor.client.plugins.ClientRequestException

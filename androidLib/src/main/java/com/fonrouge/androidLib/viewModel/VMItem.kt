@@ -3,15 +3,15 @@ package com.fonrouge.androidLib.viewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.fonrouge.fsLib.common.ICommonContainer
-import com.fonrouge.fsLib.common.toIApiItem
-import com.fonrouge.fsLib.model.apiData.ApiItem
-import com.fonrouge.fsLib.model.apiData.CrudTask
-import com.fonrouge.fsLib.model.apiData.IApiFilter
-import com.fonrouge.fsLib.model.apiData.IApiItem
-import com.fonrouge.fsLib.model.base.BaseDoc
-import com.fonrouge.fsLib.model.state.ItemState
-import com.fonrouge.fsLib.model.state.SimpleState
+import com.fonrouge.base.api.ApiItem
+import com.fonrouge.base.api.CrudTask
+import com.fonrouge.base.api.IApiFilter
+import com.fonrouge.base.api.IApiItem
+import com.fonrouge.base.common.ICommonContainer
+import com.fonrouge.base.common.toIApiItem
+import com.fonrouge.base.model.BaseDoc
+import com.fonrouge.base.state.ItemState
+import com.fonrouge.base.state.SimpleState
 import kotlinx.serialization.json.Json
 import kotlin.reflect.KSuspendFunction1
 

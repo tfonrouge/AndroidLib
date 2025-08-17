@@ -1,9 +1,11 @@
 package com.fonrouge.androidLib.viewModel
 
 import androidx.lifecycle.ViewModel
-import com.fonrouge.fsLib.model.state.ISimpleState
-import com.fonrouge.fsLib.model.state.SimpleState
-import com.fonrouge.fsLib.model.state.State
+import com.fonrouge.base.state.ISimpleState
+import com.fonrouge.base.state.SimpleState
+import com.fonrouge.base.state.State.Error
+import com.fonrouge.base.state.State.Ok
+import com.fonrouge.base.state.State.Warn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -82,7 +84,7 @@ abstract class VMBase : ViewModel() {
         onAccept: (() -> Unit)? = null,
     ) {
         _stateAlert.value = when (itemState.state) {
-            State.Ok -> StateAlert(
+            Ok -> StateAlert(
                 simpleState = itemState,
                 type = StateAlert.Type.Info(
                     onAccept = onAccept
@@ -90,7 +92,7 @@ abstract class VMBase : ViewModel() {
                 onDismissRequest = onDismissRequest
             )
 
-            State.Warn -> StateAlert(
+            Warn -> StateAlert(
                 simpleState = itemState,
                 type = StateAlert.Type.Warn(
                     canRetry = canRetry ?: true,
@@ -99,7 +101,7 @@ abstract class VMBase : ViewModel() {
                 )
             )
 
-            State.Error -> StateAlert(
+            Error -> StateAlert(
                 simpleState = itemState,
                 type = StateAlert.Type.Error(
                     canRetry = canRetry ?: false,

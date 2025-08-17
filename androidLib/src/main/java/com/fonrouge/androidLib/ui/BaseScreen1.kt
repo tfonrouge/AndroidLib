@@ -44,9 +44,9 @@ import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.fonrouge.androidLib.viewModel.VMBase
 import com.fonrouge.androidLib.viewModel.VMList
-import com.fonrouge.fsLib.common.ICommonContainer
-import com.fonrouge.fsLib.model.apiData.IApiFilter
-import com.fonrouge.fsLib.model.base.BaseDoc
+import com.fonrouge.base.api.IApiFilter
+import com.fonrouge.base.common.ICommonContainer
+import com.fonrouge.base.model.BaseDoc
 import eu.bambooapps.material3.pullrefresh.PullRefreshIndicator
 import eu.bambooapps.material3.pullrefresh.PullRefreshState
 import eu.bambooapps.material3.pullrefresh.pullRefresh

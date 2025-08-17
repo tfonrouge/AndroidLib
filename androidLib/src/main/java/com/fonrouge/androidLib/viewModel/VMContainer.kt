@@ -1,8 +1,8 @@
 package com.fonrouge.androidLib.viewModel
 
-import com.fonrouge.fsLib.common.ICommonContainer
-import com.fonrouge.fsLib.model.apiData.IApiFilter
-import com.fonrouge.fsLib.model.base.BaseDoc
+import com.fonrouge.base.api.IApiFilter
+import com.fonrouge.base.common.ICommonContainer
+import com.fonrouge.base.model.BaseDoc
 
 abstract class VMContainer<CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiFilter<*>> :
     VMBase() {
