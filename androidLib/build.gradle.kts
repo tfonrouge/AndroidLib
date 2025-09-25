@@ -84,8 +84,8 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    // solves: Could not resolve com.google.guava:listenablefuture:1.0
-//    implementation(libs.google.guava)
+//     solves: Could not resolve com.google.guava:listenablefuture:1.0
+    implementation(libs.google.guava)
 }
 
 project.afterEvaluate {
