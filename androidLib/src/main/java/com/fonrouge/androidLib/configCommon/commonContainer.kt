@@ -193,7 +193,7 @@ fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiF
     composable(commonContainer.routeItem) { navBackStackEntry ->
         commonContainer.DecodeRouteItemParams(
             navBackStackEntry = navBackStackEntry,
-        ) { it ->
+        ) {
             function1(it)
         }
     }
