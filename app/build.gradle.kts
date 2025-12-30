@@ -47,13 +47,12 @@ android {
     }
 }
 
-configurations.all {
-    exclude(group = "ch.qos.logback", module = "logback-classic")
-    exclude(group = "ch.qos.logback", module = "logback-core")
-}
-
 dependencies {
     implementation(project(":androidLib"))
+    implementation(libs.fonrouge.arellib) {
+        exclude(group = "com.fonrouge.fsLib", module = "fullStack-jvm")
+//        exclude(group = "com.fonrouge.fsLib", module = "base")
+    }
     implementation(libs.slf4j.android)
 
     implementation(libs.androidx.core.ktx)
