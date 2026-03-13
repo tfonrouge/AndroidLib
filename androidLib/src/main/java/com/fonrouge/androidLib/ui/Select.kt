@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 
-@Suppress("unused")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Select(

@@ -35,7 +35,6 @@ import com.fonrouge.base.common.ICommonContainer
 import com.fonrouge.base.model.BaseDoc
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Suppress("unused")
 @Composable
 inline fun <reified VML : VMList<CC, T, ID, FILT>, CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiFilter<*>> ScreenList(
     navHostController: NavHostController = NavHostController(LocalContext.current),

@@ -21,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.fonrouge.androidLib.commonServices.AppApi
-import com.fonrouge.androidLib.helloResponse
 import com.fonrouge.androidLib.viewModel.VMItem
 import com.fonrouge.base.model.BaseDoc
 import com.fonrouge.myapplication.ui.theme.MyApplicationTheme
@@ -95,7 +94,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
             }
         ) {
             if (clicked) {
-                Text(text = helloResponse(person.name))
+                Text(text = "Hello ${person.name} ... !")
             } else
                 Text(text = "Click me")
         }

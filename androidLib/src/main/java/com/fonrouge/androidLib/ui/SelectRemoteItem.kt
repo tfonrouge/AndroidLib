@@ -30,7 +30,6 @@ import com.fonrouge.base.model.BaseDoc
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@Suppress("unused")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T : BaseDoc<ID>, ID : Any> SelectRemoteItem(

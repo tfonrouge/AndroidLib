@@ -12,7 +12,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fonrouge.androidLib.viewModel.VMBase
 
-@Suppress("unused")
 @Composable
 fun ScreenStateAlert(vmBase: VMBase) {
     vmBase.stateAlert.collectAsStateWithLifecycle().value?.let { itemAlert ->

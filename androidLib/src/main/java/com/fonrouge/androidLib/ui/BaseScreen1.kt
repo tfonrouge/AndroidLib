@@ -31,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -66,8 +67,9 @@ fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiF
             .let { modifier -> paddingValues?.let { modifier.padding(it) } ?: modifier }
     ) {
         val items: LazyPagingItems<T> = vmList.flowPagingData.collectAsLazyPagingItems()
+        val refreshing by vmList.refreshingList.collectAsStateWithLifecycle()
         PullRefreshIndicator(
-            refreshing = vmList.refreshingList.value,
+            refreshing = refreshing,
             state = pullRefreshState,
             modifier = Modifier
                 .align(Alignment.TopCenter)
@@ -102,7 +104,6 @@ fun <T : Any> ItemCard2(
     content(items[index])
 }
 
-@Suppress("unused")
 @Composable
 fun ItemCard(
     onClick: (() -> Unit)? = null,
@@ -119,7 +120,6 @@ fun ItemCard(
     )
 }
 
-@Suppress("unused")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DismissBackgroundDelete(
@@ -189,8 +189,9 @@ fun snackbarHostState(vmBase: VMBase): SnackbarHostState {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T : BaseDoc<*>> pullRefreshState(vmList: VMList<*, T, *, *>): PullRefreshState {
+    val refreshing by vmList.refreshingList.collectAsStateWithLifecycle()
     return rememberPullRefreshState(
-        refreshing = vmList.refreshingList.value,
+        refreshing = refreshing,
         onRefresh = {
             vmList.requestRefresh = true
         }

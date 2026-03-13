@@ -65,7 +65,6 @@ fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiF
  * @param ID The ID type of the base document.
  * @param FILT The API filter type.
  */
-@Suppress("unused")
 fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiFilter<*>> CC.navigateItem(
     navHostController: NavHostController,
     apiItem: ApiItem.Query<T, ID, FILT>,
@@ -99,7 +98,6 @@ fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiF
  * @param masterItem the master item to serialize its ID for the API filter
  * @throws Exception if an error occurs while creating the API filter instance
  */
-@Suppress("unused")
 inline fun <MI : BaseDoc<MID>, reified MID : Any, CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiFilter<MID>> CC.navigateChildList(
     navHostController: NavHostController,
     masterItem: MI?,
@@ -143,7 +141,6 @@ fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiF
  * @param onResponse optional callback function to handle the [ItemState] response
  * @return the [ItemState] result of the function call
  */
-@Suppress("unused")
 suspend fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiFilter<*>> CC.callItemApi(
     function: KSuspendFunction1<IApiItem<T, ID, FILT>, ItemState<T>>,
     apiItem: ApiItem<T, ID, FILT>,
@@ -185,7 +182,6 @@ suspend fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT
  *
  *
  */
-@Suppress("unused")
 fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiFilter<*>> NavGraphBuilder.composableItem(
     commonContainer: CC,
     function1: @Composable AnimatedContentScope.(ApiItem.Query<T, ID, FILT>) -> Unit,
@@ -199,7 +195,6 @@ fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiF
     }
 }
 
-@Suppress("unused")
 fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiFilter<*>> NavGraphBuilder.composableList(
     commonContainer: CC,
     function: @Composable AnimatedContentScope.(FILT) -> Unit,

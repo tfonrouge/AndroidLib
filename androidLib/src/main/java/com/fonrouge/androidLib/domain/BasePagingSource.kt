@@ -22,9 +22,9 @@ class BasePagingSource<CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID :
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, T> {
         return try {
             val nextPage = params.key ?: 1
-            vmList.refreshingList.value = true
+            vmList.setRefreshingList(true)
             val listState = vmList.listStateGetter(nextPage)
-            vmList.refreshingList.value = false
+            vmList.setRefreshingList(false)
             LoadResult.Page(
                 data = listState.data,
                 prevKey = if (nextPage == 1) null else nextPage - 1,
@@ -32,14 +32,9 @@ class BasePagingSource<CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID :
             )
         } catch (e: IOException) {
             vmList.pushSimpleState(SimpleState(isOk = false, msgError = e.localizedMessage))
-//            return LoadResult.Error(e)
-            return LoadResult.Page(
-                data = listOf(),
-                prevKey = null,
-                nextKey = null,
-            )
+            return LoadResult.Error(e)
         } finally {
-            vmList.refreshingList.value = false
+            vmList.setRefreshingList(false)
         }
     }
 }

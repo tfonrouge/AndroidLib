@@ -11,7 +11,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fonrouge.androidLib.viewModel.ConfirmAlert
 import com.fonrouge.androidLib.viewModel.VMBase
 
-@Suppress("unused")
 @Composable
 fun ScreenConfirmAlert(viewBase: VMBase) {
     viewBase.confirmAlert.collectAsStateWithLifecycle().value?.let { confirmAlert: ConfirmAlert ->

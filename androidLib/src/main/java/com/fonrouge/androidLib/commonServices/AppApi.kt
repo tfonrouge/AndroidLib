@@ -28,14 +28,14 @@ import io.ktor.http.parameters
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-object AppApi {
-    var version: String = "0.0"
-    var urlBase: String = "localhost"
-    var appRoute: String = "appRoute"
-    var userAgent: String = "AppAndroid"
+object AppApi : IAppApi {
+    override var version: String = "0.0"
+    override var urlBase: String = "localhost"
+    override var appRoute: String = "appRoute"
+    override var userAgent: String = "AppAndroid"
     var serializedIUser: String? = null
     var engine: Engine? = null  // uses engine default
-    var delayBeforeRequest: Int = 0
+    override var delayBeforeRequest: Int = 0
     private var _httpClient: HttpClient? = null
 
     private fun getEngine(
@@ -50,7 +50,7 @@ object AppApi {
         }
     }
 
-    val client: HttpClient
+    override val client: HttpClient
         get() {
             if (_httpClient == null) {
                 _httpClient = getEngine(engine) {
@@ -83,9 +83,9 @@ object AppApi {
             return _httpClient!!
         }
 
-    val logged get() = serializedIUser != null
+    override val logged get() = serializedIUser != null
 
-    fun clearHttpClient() {
+    override fun clearHttpClient() {
         _httpClient?.close()
         _httpClient = null
     }

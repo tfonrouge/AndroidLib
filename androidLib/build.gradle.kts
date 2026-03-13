@@ -75,8 +75,8 @@ dependencies {
 
     api(libs.barcode.scanning)
 
-    api(libs.ktor.client.cio)
-    api(libs.ktor.client.okhttp)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.okhttp)
     api(libs.ktor.client.android)
     api(libs.ktor.client.auth)
     api(libs.ktor.client.content.negotiation)
@@ -85,6 +85,9 @@ dependencies {
     api(libs.ktor.client.logging)
 
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
+    testImplementation(libs.mockk)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
@@ -98,7 +101,7 @@ project.afterEvaluate {
             register<MavenPublication>("release") {
                 groupId = "com.fonrouge"
                 artifactId = "androidLib"
-                version = "1.1.0"
+                version = "1.2.0"
 
                 afterEvaluate {
                     from(components["release"])

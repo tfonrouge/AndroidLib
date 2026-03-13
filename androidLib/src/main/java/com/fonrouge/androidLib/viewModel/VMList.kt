@@ -2,18 +2,12 @@ package com.fonrouge.androidLib.viewModel
 
 import androidx.annotation.OptIn
 import androidx.camera.core.ExperimentalGetImage
-import androidx.compose.runtime.MutableIntState
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.fonrouge.androidLib.commonServices.AppApi
+import com.fonrouge.androidLib.commonServices.appApi
 import com.fonrouge.androidLib.domain.BasePagingSource
 import com.fonrouge.base.api.ApiItem
 import com.fonrouge.base.api.ApiList
@@ -27,6 +21,9 @@ import com.fonrouge.base.state.ListState
 import com.fonrouge.base.state.SimpleState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.json.Json
 import kotlin.reflect.KSuspendFunction1
 
@@ -40,31 +37,64 @@ abstract class VMList<CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : 
         var lastRequest: Long = 0L
     }
 
-    override var apiFilter: FILT by mutableStateOf(
+    private val _apiFilter = MutableStateFlow(
         Json.decodeFromString(
             commonContainer.apiFilterSerializer,
             Json.encodeToString(commonContainer.apiFilterSerializer, apiFilter)
         )
     )
+    override var apiFilter: FILT
+        get() = _apiFilter.value
+        set(value) { _apiFilter.value = value }
+    val apiFilterFlow: StateFlow<FILT> = _apiFilter.asStateFlow()
+
     private var filterBacking: FILT? = null
-    open val pageSize: MutableIntState = mutableIntStateOf(20)
-    val refreshingList: MutableState<Boolean> = mutableStateOf(false)
-    var requestRefresh by mutableStateOf(false)
-    var periodicUpdate by mutableStateOf(false)
-    var periodicInterval by mutableIntStateOf(5000)
-    var refreshListCounter by mutableIntStateOf(0)
-    val refreshByFilter = mutableStateOf(false)
+
+    private val _pageSize = MutableStateFlow(20)
+    open val pageSize: StateFlow<Int> = _pageSize.asStateFlow()
+    fun setPageSize(value: Int) { _pageSize.value = value }
+
+    private val _refreshingList = MutableStateFlow(false)
+    val refreshingList: StateFlow<Boolean> = _refreshingList.asStateFlow()
+    fun setRefreshingList(value: Boolean) { _refreshingList.value = value }
+
+    private val _requestRefresh = MutableStateFlow(false)
+    var requestRefresh: Boolean
+        get() = _requestRefresh.value
+        set(value) { _requestRefresh.value = value }
+    val requestRefreshFlow: StateFlow<Boolean> = _requestRefresh.asStateFlow()
+
+    private val _periodicUpdate = MutableStateFlow(false)
+    var periodicUpdate: Boolean
+        get() = _periodicUpdate.value
+        set(value) { _periodicUpdate.value = value }
+
+    private val _periodicInterval = MutableStateFlow(5000)
+    var periodicInterval: Int
+        get() = _periodicInterval.value
+        set(value) { _periodicInterval.value = value }
+
+    private val _refreshListCounter = MutableStateFlow(0)
+    var refreshListCounter: Int
+        get() = _refreshListCounter.value
+        set(value) { _refreshListCounter.value = value }
+    val refreshListCounterFlow: StateFlow<Int> = _refreshListCounter.asStateFlow()
+
+    private val _refreshByFilter = MutableStateFlow(false)
+    val refreshByFilter: StateFlow<Boolean> = _refreshByFilter.asStateFlow()
+    fun setRefreshByFilter(value: Boolean) { _refreshByFilter.value = value }
+
     open val onBeforeListStateGet: (() -> Unit)? = null
 
     @OptIn(ExperimentalGetImage::class)
     suspend fun listStateGetter(pageNum: Int): ListState<T> {
-        if (AppApi.delayBeforeRequest > 0) delay(AppApi.delayBeforeRequest.toLong())
+        if (appApi.delayBeforeRequest > 0) delay(appApi.delayBeforeRequest.toLong())
         onBeforeListStateGet?.invoke()
         lastRequest = System.currentTimeMillis()
         return listStateFun.invoke(
             ApiList(
                 tabPage = pageNum,
-                tabSize = pageSize.intValue,
+                tabSize = _pageSize.value,
                 apiFilter = apiFilter
             )
         )
@@ -73,7 +103,7 @@ abstract class VMList<CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : 
     val flowPagingData: Flow<PagingData<T>> by lazy {
         Pager(
             config = PagingConfig(
-                pageSize = pageSize.intValue,
+                pageSize = _pageSize.value,
             ),
             pagingSourceFactory = {
                 BasePagingSource(
@@ -86,14 +116,14 @@ abstract class VMList<CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : 
     open fun onEvent(uiBaseEvent: UIBaseEvent) {
         when (uiBaseEvent) {
             UIBaseEvent.EditingFilter -> {
-                if (!refreshByFilter.value) {
+                if (!_refreshByFilter.value) {
                     filterBacking = apiFilter
-                    refreshByFilter.value = true
+                    _refreshByFilter.value = true
                 }
             }
 
             UIBaseEvent.RefreshByFilter -> {
-                refreshByFilter.value = false
+                _refreshByFilter.value = false
                 if (filterBacking?.equals(apiFilter) != true) {
                     filterBacking = apiFilter
                     requestRefresh = true
@@ -102,7 +132,6 @@ abstract class VMList<CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : 
         }
     }
 
-    @Suppress("unused")
     suspend fun deleteItem(
         item: T,
     ) {

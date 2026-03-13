@@ -1,8 +1,5 @@
 package com.fonrouge.androidLib.viewModel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.fonrouge.base.api.ApiItem
 import com.fonrouge.base.api.CrudTask
 import com.fonrouge.base.api.IApiFilter
@@ -12,18 +9,40 @@ import com.fonrouge.base.common.toIApiItem
 import com.fonrouge.base.model.BaseDoc
 import com.fonrouge.base.state.ItemState
 import com.fonrouge.base.state.SimpleState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.json.Json
 import kotlin.reflect.KSuspendFunction1
 
-@Suppress("unused")
 abstract class VMItem<CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiFilter<*>>(
     final override val commonContainer: CC,
     val itemStateFun: KSuspendFunction1<IApiItem<T, ID, FILT>, ItemState<T>>,
 ) : VMContainer<CC, T, ID, FILT>() {
-    var item: T? by mutableStateOf(null)
-    var crudTask: CrudTask by mutableStateOf(CrudTask.Read)
-    var itemAlreadyOn by mutableStateOf<Boolean?>(null)
-    var controlsEnabled by mutableStateOf(false)
+    private val _item = MutableStateFlow<T?>(null)
+    var item: T?
+        get() = _item.value
+        set(value) { _item.value = value }
+    val itemFlow: StateFlow<T?> = _item.asStateFlow()
+
+    private val _crudTask = MutableStateFlow(CrudTask.Read)
+    var crudTask: CrudTask
+        get() = _crudTask.value
+        set(value) { _crudTask.value = value }
+    val crudTaskFlow: StateFlow<CrudTask> = _crudTask.asStateFlow()
+
+    private val _itemAlreadyOn = MutableStateFlow<Boolean?>(null)
+    var itemAlreadyOn: Boolean?
+        get() = _itemAlreadyOn.value
+        set(value) { _itemAlreadyOn.value = value }
+    val itemAlreadyOnFlow: StateFlow<Boolean?> = _itemAlreadyOn.asStateFlow()
+
+    private val _controlsEnabled = MutableStateFlow(false)
+    var controlsEnabled: Boolean
+        get() = _controlsEnabled.value
+        set(value) { _controlsEnabled.value = value }
+    val controlsEnabledFlow: StateFlow<Boolean> = _controlsEnabled.asStateFlow()
+
     override var apiFilter: FILT = commonContainer.apiFilterInstance()
     suspend fun makeQueryCall(
         id: ID? = null,
@@ -66,7 +85,6 @@ abstract class VMItem<CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : 
         )
     }
 
-    @Suppress("unused")
     suspend fun makeQueryCall(
         apiItem: ApiItem<T, ID, FILT>,
         onDone: VMContainer<CC, T, ID, FILT>.(ItemState<T>) -> Unit,
@@ -91,7 +109,6 @@ abstract class VMItem<CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : 
         onDone(itemState)
     }
 
-    @Suppress("unused")
     suspend fun makeActionCall(
         onDone: VMContainer<CC, T, ID, FILT>.(ItemState<T>) -> Unit,
     ) {
