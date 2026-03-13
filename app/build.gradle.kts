@@ -50,7 +50,7 @@ android {
 dependencies {
     implementation(project(":androidLib"))
     implementation(libs.fonrouge.arellib) {
-        exclude(group = "com.fonrouge.fsLib", module = "fullStack-jvm")
+        exclude(group = "com.fonrouge.fsLib")
     }
     implementation(libs.slf4j.android)
 
