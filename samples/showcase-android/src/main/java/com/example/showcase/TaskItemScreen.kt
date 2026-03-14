@@ -38,8 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.fonrouge.androidLib.ui.ScreenStateAlert
-import com.fonrouge.androidLib.ui.snackbarHostState
+import com.fonrouge.fslib.android.ui.ScreenStateAlert
+import com.fonrouge.fslib.android.ui.snackbarHostState
 import com.fonrouge.base.api.ApiItem
 import com.fonrouge.base.api.CrudTask
 import kotlinx.coroutines.launch

@@ -1,6 +1,6 @@
 package com.example.showcase
 
-import com.fonrouge.androidLib.viewModel.VMItem
+import com.fonrouge.fslib.android.viewModel.VMItem
 
 private val taskServiceProxy = TaskServiceProxy()
 

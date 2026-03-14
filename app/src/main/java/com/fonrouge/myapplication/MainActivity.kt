@@ -20,8 +20,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.fonrouge.androidLib.commonServices.AppApi
-import com.fonrouge.androidLib.viewModel.VMItem
+import com.fonrouge.fslib.android.commonServices.AppApi
+import com.fonrouge.fslib.android.viewModel.VMItem
 import com.fonrouge.base.model.BaseDoc
 import com.fonrouge.myapplication.ui.theme.MyApplicationTheme
 import io.ktor.client.HttpClient

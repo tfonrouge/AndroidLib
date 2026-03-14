@@ -48,7 +48,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":androidLib"))
+    implementation(project(":android"))
     implementation(libs.slf4j.android)
 
     implementation(libs.androidx.core.ktx)

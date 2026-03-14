@@ -56,13 +56,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.fonrouge.androidLib.commonServices.AppApi
-import com.fonrouge.androidLib.commonServices.routeRegistry
-import com.fonrouge.androidLib.configCommon.composableItem
-import com.fonrouge.androidLib.configCommon.navigateCreateItem
-import com.fonrouge.androidLib.configCommon.navigateItem
-import com.fonrouge.androidLib.ui.DismissBackgroundDelete
-import com.fonrouge.androidLib.ui.ScreenList
+import com.fonrouge.fslib.android.commonServices.AppApi
+import com.fonrouge.fslib.android.commonServices.routeRegistry
+import com.fonrouge.fslib.android.configCommon.composableItem
+import com.fonrouge.fslib.android.configCommon.navigateCreateItem
+import com.fonrouge.fslib.android.configCommon.navigateItem
+import com.fonrouge.fslib.android.ui.DismissBackgroundDelete
+import com.fonrouge.fslib.android.ui.ScreenList
 import com.fonrouge.base.api.ApiItem
 import kotlinx.coroutines.launch
 

@@ -1,7 +1,7 @@
 package com.example.showcase
 
-import com.fonrouge.androidLib.commonServices.IServiceProxy
-import com.fonrouge.androidLib.commonServices.call
+import com.fonrouge.fslib.android.commonServices.IServiceProxy
+import com.fonrouge.fslib.android.commonServices.call
 import com.fonrouge.base.api.ApiList
 import com.fonrouge.base.api.IApiItem
 import com.fonrouge.base.state.ItemState

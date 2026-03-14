@@ -5,7 +5,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 Multi-module Android library project:
-- **`:androidLib`** — Reusable Android library (MVVM ViewModels, Compose UI components, Ktor HTTP client, JSON-RPC 2.0, barcode scanning). Published as `com.fonrouge:androidLib:1.1.0`.
+- **`:android`** — Reusable Android library (MVVM ViewModels, Compose UI components, Ktor HTTP client, JSON-RPC 2.0). Published as `com.fonrouge.fslib:android:2.0.0`.
+- **`:barcode`** — Optional barcode scanning module (CameraX, ML Kit, GMS code scanner). Published as `com.fonrouge.fslib:barcode:2.0.0`.
 - **`:app`** — Demo/test application consuming the library.
 - **`:samples:showcase-android`** — Reference app demonstrating full integration with an fsLib backend (route discovery, paginated lists, CRUD forms).
 
@@ -17,25 +18,31 @@ Dependencies on external library: `com.fonrouge.fslib:core` (models, API interfa
 ./gradlew build                    # Full build
 ./gradlew :app:assembleDebug       # Debug APK
 ./gradlew :app:installDebug        # Install debug APK to device
-./gradlew :androidLib:assemble     # Build library AAR
+./gradlew :android:assemble        # Build library AAR
+./gradlew :barcode:assemble        # Build barcode AAR
 ./gradlew test                     # Unit tests
 ./gradlew connectedAndroidTest     # Instrumented tests
 ./gradlew lint                     # Android Lint
 
 # Publish library to Maven Local
-./gradlew :androidLib:publishReleasePublicationToMavenLocalRepository
+./gradlew :android:publishReleasePublicationToMavenLocalRepository
+./gradlew :barcode:publishReleasePublicationToMavenLocalRepository
 ```
 
 ## Architecture
 
 **MVVM with Compose Navigation** — ViewModels manage state via `StateFlow`, Compose screens observe and render.
 
-### ViewModel Hierarchy (`androidLib/.../viewModel/`)
+### ViewModel Hierarchy (`android/.../viewModel/`)
 - `VMBase` — Base VM with snackbar, state alerts, confirm alerts
 - `VMContainer` — Adds filter support via `ICommonContainer<T, ID, FILT>`
 - `VMList` — Pagination (`Pager`/`BasePagingSource`), periodic updates, pull-to-refresh
 - `VMItem` — Single item CRUD (Create, Read, Update, Delete) with two-phase Query→Action pattern
+
+### Barcode Scanning (`barcode/` module)
 - `VMCamera` — Camera/barcode scanning (StateFlow-based)
+- `BarcodeCamera` — CameraX + ML Kit wrapper with torch control
+- `ScanBarcodeScreen` — Router composable (GMS or CameraX)
 
 ### JSON-RPC 2.0 Remote Calling (`commonServices/`)
 - `RouteRegistry` — Injectable class that discovers RPC routes from `/apiContract` endpoint. Thread-safe via Mutex. Supports version validation and auto re-discovery on stale routes.
@@ -60,22 +67,22 @@ Generic `ICommonContainer<T, ID, FILT>` provides type-safe API filtering, serial
 - Compose BOM 2026.03.00 with Material3
 - Ktor Client 3.4.1 (with HttpRequestRetry)
 - Jetpack Navigation Compose 2.9.7, Paging Compose 3.4.2
-- CameraX 1.5.3 + ML Kit Barcode Scanning
+- CameraX 1.5.3 + ML Kit Barcode Scanning (in `:barcode` module)
 - Min SDK 30, Target/Compile SDK 36
 
 ## Dependency Management
 
-Version catalog at `gradle/libs.versions.toml`. The `androidLib` publish version reads from `libs.versions.androidLib.get()`.
+Version catalog at `gradle/libs.versions.toml`. The publish version reads from `libs.versions.fslibAndroid.get()`.
 
-Watch for transitive conflicts — guava is explicitly included. The `showcase-android` sample excludes `core-jvm` from `showcase-lib` to avoid duplicate fsLib classes.
+Watch for transitive conflicts — guava is explicitly included in `:barcode`. The `showcase-android` sample excludes `core-jvm` from `showcase-lib` to avoid duplicate fsLib classes.
 
 ## ProGuard / R8
 
-Consumer rules in `androidLib/consumer-rules.pro` keep:
+Consumer rules in `android/consumer-rules.pro` keep:
 - `@Serializable` JSON-RPC wire types
 - `IServiceProxy` implementors (method names used by stack trace reflection)
 - kotlinx.serialization generated serializers
 
 ## Testing
 
-Unit tests in `androidLib/src/test/` using JUnit 4, kotlinx.coroutines.test, Turbine, MockK, and Ktor MockEngine.
+Unit tests in `android/src/test/` and `barcode/src/test/` using JUnit 4, kotlinx.coroutines.test, Turbine, MockK, and Ktor MockEngine.

@@ -1,6 +1,6 @@
 package com.example.showcase
 
-import com.fonrouge.androidLib.viewModel.VMList
+import com.fonrouge.fslib.android.viewModel.VMList
 import com.fonrouge.base.api.ApiList
 import com.fonrouge.base.api.IApiItem
 import com.fonrouge.base.state.ItemState

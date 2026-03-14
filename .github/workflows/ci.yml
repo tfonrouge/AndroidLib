@@ -23,4 +23,40 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build and test
-        run: ./gradlew :androidLib:test :androidLib:assemble :app:assembleDebug :samples:showcase-android:assembleDebug
+        run: ./gradlew :android:test :android:assemble :barcode:test :barcode:assemble :app:assembleDebug :samples:showcase-android:assembleDebug
+
+  snapshot-compat:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Checkout fsLib
+        uses: actions/checkout@v4
+        with:
+          repository: nicklawls/fsLib
+          path: fsLib-snapshot
+
+      - name: Publish fsLib core to Maven Local
+        working-directory: fsLib-snapshot
+        run: ./gradlew :core:publishToMavenLocal
+
+      - name: Resolve fsLib snapshot version
+        id: fslib-version
+        working-directory: fsLib-snapshot
+        run: |
+          VERSION=$(./gradlew :core:properties -q | grep '^version:' | awk '{print $2}')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Build fslib-android against fsLib snapshot
+        run: ./gradlew :android:test :android:assemble -PfslibVersion=${{ steps.fslib-version.outputs.version }}

@@ -46,7 +46,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":androidLib"))
+    implementation(project(":android"))
     implementation("com.example:showcase-lib:1.0.0-SNAPSHOT")
     implementation(libs.slf4j.android)
 
