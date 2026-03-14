@@ -144,13 +144,12 @@ See the [Usage Guide](USAGE-GUIDE.md) for detailed documentation and the [`sampl
 # Publishes com.fonrouge.fslib:android:2.0.0-SNAPSHOT
 #       and com.fonrouge.fslib:barcode:2.0.0-SNAPSHOT
 
-# Release to Maven Local
-./gradlew publishToMavenLocal
-
 # Release to Maven Central (two-step)
 ./gradlew publishAllPublicationsToStagingRepository
 ./gradlew publishToCentralPortal
 ```
+
+Publishing release versions to Maven Local is **blocked by default** to prevent silently shadowing Maven Central artifacts. Use `-PSNAPSHOT` (recommended) or `-PFORCE_LOCAL` to override.
 
 The `-PSNAPSHOT` flag appends `-SNAPSHOT` to the version automatically. Use this when developing against a local checkout of fslib-android from another project:
 

@@ -603,13 +603,20 @@ dependencies {
 }
 ```
 
-### Release to Maven Local
+### Shadow protection
+
+Publishing a release version (e.g., `2.0.0`) to Maven Local is **blocked by default**. If you have `mavenLocal()` in your repositories, a local release artifact would silently shadow the Maven Central version for every project on your machine.
 
 ```bash
+# This will fail with a clear error message:
 ./gradlew publishToMavenLocal
-```
 
-Publishes the release version (e.g., `2.0.0`) without the snapshot suffix.
+# Use -PSNAPSHOT instead (recommended):
+./gradlew publishToMavenLocal -PSNAPSHOT
+
+# Or override the safety check if you really need a local release:
+./gradlew publishToMavenLocal -PFORCE_LOCAL
+```
 
 ### Release to Maven Central
 

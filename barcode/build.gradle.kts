@@ -137,6 +137,21 @@ project.afterEvaluate {
     }
 }
 
+// Prevent publishing release versions to mavenLocal — this would silently shadow
+// Maven Central artifacts for every project on the machine that uses mavenLocal().
+tasks.withType<PublishToMavenLocal> {
+    doFirst {
+        if (!project.hasProperty("SNAPSHOT") && !project.hasProperty("FORCE_LOCAL")) {
+            error(
+                "Publishing release version $publishVersion to mavenLocal is blocked to prevent " +
+                    "shadowing Maven Central artifacts.\n" +
+                    "  Use: ./gradlew publishToMavenLocal -PSNAPSHOT  (recommended)\n" +
+                    "  Or:  ./gradlew publishToMavenLocal -PFORCE_LOCAL  (override safety check)"
+            )
+        }
+    }
+}
+
 signing {
     useGpgCmd()
     isRequired = findProperty("signing.gnupg.keyName") != null
