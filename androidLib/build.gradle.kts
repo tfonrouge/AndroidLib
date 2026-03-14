@@ -102,7 +102,7 @@ project.afterEvaluate {
             register<MavenPublication>("release") {
                 groupId = "com.fonrouge"
                 artifactId = "androidLib"
-                version = "1.2.0"
+                version = libs.versions.androidLib.get()
 
                 afterEvaluate {
                     from(components["release"])
