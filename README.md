@@ -136,6 +136,31 @@ See the [Usage Guide](USAGE-GUIDE.md) for detailed documentation and the [`sampl
 ./gradlew :app:assembleDebug      # Demo app
 ```
 
+## Publishing
+
+```bash
+# Snapshot to Maven Local (for local development)
+./gradlew publishToMavenLocal -PSNAPSHOT
+# Publishes com.fonrouge.fslib:android:2.0.0-SNAPSHOT
+#       and com.fonrouge.fslib:barcode:2.0.0-SNAPSHOT
+
+# Release to Maven Local
+./gradlew publishToMavenLocal
+
+# Release to Maven Central (two-step)
+./gradlew publishAllPublicationsToStagingRepository
+./gradlew publishToCentralPortal
+```
+
+The `-PSNAPSHOT` flag appends `-SNAPSHOT` to the version automatically. Use this when developing against a local checkout of fslib-android from another project:
+
+```kotlin
+// In your app's build.gradle.kts
+dependencies {
+    implementation("com.fonrouge.fslib:android:2.0.0-SNAPSHOT")
+}
+```
+
 ## Migration from 1.x
 
 Version 2.0.0 is a breaking change:

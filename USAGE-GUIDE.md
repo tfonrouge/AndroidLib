@@ -21,6 +21,7 @@ Detailed guide for building Android apps with **fslib-android** against an [fsLi
 - [Pagination](#pagination)
 - [Barcode Scanning](#barcode-scanning)
 - [Testing](#testing)
+- [Publishing & Snapshots](#publishing--snapshots)
 - [ProGuard / R8](#proguard--r8)
 
 ---
@@ -570,6 +571,71 @@ class MyViewModelTest {
         assertNotNull(vm.stateAlert.value)
     }
 }
+```
+
+---
+
+## Publishing & Snapshots
+
+### Local snapshot builds
+
+When developing fslib-android itself or testing changes locally before publishing a release, use the `-PSNAPSHOT` flag:
+
+```bash
+./gradlew publishToMavenLocal -PSNAPSHOT
+```
+
+This publishes both modules with `-SNAPSHOT` appended to the version:
+- `com.fonrouge.fslib:android:2.0.0-SNAPSHOT`
+- `com.fonrouge.fslib:barcode:2.0.0-SNAPSHOT`
+
+Then in your consuming app:
+
+```kotlin
+// build.gradle.kts
+repositories {
+    mavenLocal()  // must come before mavenCentral() to pick up snapshots
+    mavenCentral()
+}
+
+dependencies {
+    implementation("com.fonrouge.fslib:android:2.0.0-SNAPSHOT")
+}
+```
+
+### Release to Maven Local
+
+```bash
+./gradlew publishToMavenLocal
+```
+
+Publishes the release version (e.g., `2.0.0`) without the snapshot suffix.
+
+### Release to Maven Central
+
+```bash
+# Step 1: Build, sign, and stage artifacts
+./gradlew publishAllPublicationsToStagingRepository
+
+# Step 2: Upload the bundle to Sonatype Central Portal
+./gradlew publishToCentralPortal
+```
+
+Requires GPG signing keys and Sonatype credentials configured in `~/.gradle/gradle.properties`:
+
+```properties
+ossrhUsername=<Sonatype Central Portal token username>
+ossrhPassword=<Sonatype Central Portal token password>
+signing.gnupg.keyName=<GPG key ID>
+signing.gnupg.passphrase=<GPG key passphrase>
+```
+
+### Testing against fsLib snapshots
+
+Build fslib-android against an unreleased version of fsLib core:
+
+```bash
+./gradlew :android:test :android:assemble -PfslibVersion=3.1.0-SNAPSHOT
 ```
 
 ---
