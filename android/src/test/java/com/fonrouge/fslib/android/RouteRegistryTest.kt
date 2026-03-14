@@ -101,6 +101,33 @@ class RouteRegistryTest {
         assertNull(registry.protocol)
     }
 
+    // --- Convention-based routes (no discover) ---
+
+    @Test
+    fun `getRoute returns convention route when not discovered`() {
+        assertEquals("/rpc/UserService.getUser", registry.getRoute("UserService", "getUser"))
+    }
+
+    @Test
+    fun `getRoute uses custom routePrefix for convention route`() {
+        registry.routePrefix = "/api/v2"
+        assertEquals("/api/v2/UserService.getUser", registry.getRoute("UserService", "getUser"))
+    }
+
+    @Test
+    fun `getRoute returns convention route for unknown service after discover`() = runTest {
+        appApi = buildMockAppApi()
+        registry.discover()
+        assertEquals("/rpc/UnknownService.getUser", registry.getRoute("UnknownService", "getUser"))
+    }
+
+    @Test
+    fun `getRoute returns convention route for unknown method on known service after discover`() = runTest {
+        appApi = buildMockAppApi()
+        registry.discover()
+        assertEquals("/rpc/UserService.unknownMethod", registry.getRoute("UserService", "unknownMethod"))
+    }
+
     // --- clear() ---
 
     @Test
@@ -115,42 +142,10 @@ class RouteRegistryTest {
         assertNull(registry.version)
     }
 
-    // --- getRoute() before discover ---
-
-    @Test(expected = IllegalStateException::class)
-    fun `getRoute throws IllegalStateException when not discovered`() {
-        registry.getRoute("UserService", "getUser")
-    }
+    // --- Discovered routes take priority ---
 
     @Test
-    fun `getRoute error message mentions discover`() {
-        try {
-            registry.getRoute("UserService", "getUser")
-        } catch (e: IllegalStateException) {
-            assertTrue(e.message!!.contains("discover()"))
-        }
-    }
-
-    // --- getRoute() with unknown service/method ---
-
-    @Test(expected = IllegalStateException::class)
-    fun `getRoute throws for unknown service`() = runTest {
-        appApi = buildMockAppApi()
-        registry.discover()
-        registry.getRoute("UnknownService", "getUser")
-    }
-
-    @Test(expected = IllegalStateException::class)
-    fun `getRoute throws for unknown method on known service`() = runTest {
-        appApi = buildMockAppApi()
-        registry.discover()
-        registry.getRoute("UserService", "unknownMethod")
-    }
-
-    // --- Successful getRoute() ---
-
-    @Test
-    fun `getRoute returns correct route after discover`() = runTest {
+    fun `getRoute returns discovered route over convention`() = runTest {
         appApi = buildMockAppApi()
         registry.discover()
 
@@ -221,10 +216,11 @@ class RouteRegistryTest {
         assertTrue(registry.isDiscovered)
     }
 
-    @Test(expected = IllegalStateException::class)
-    fun `rediscoverAndGetRoute throws for unknown service after re-discovery`() = runTest {
+    @Test
+    fun `rediscoverAndGetRoute falls back to convention for unknown service`() = runTest {
         appApi = buildMockAppApi()
-        registry.rediscoverAndGetRoute("UnknownService", "unknownMethod")
+        val route = registry.rediscoverAndGetRoute("UnknownService", "unknownMethod")
+        assertEquals("/rpc/UnknownService.unknownMethod", route)
     }
 
     // --- Thread safety ---
@@ -257,11 +253,7 @@ class RouteRegistryTest {
                 if (i % 2 == 0) {
                     registry.discover()
                 } else {
-                    try {
-                        registry.getRoute("UserService", "getUser")
-                    } catch (_: IllegalStateException) {
-                        // acceptable during rediscovery
-                    }
+                    registry.getRoute("UserService", "getUser")
                 }
             }
         }

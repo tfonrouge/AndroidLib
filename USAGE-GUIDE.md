@@ -6,7 +6,7 @@ Detailed guide for building Android apps with **fslib-android** against an [fsLi
 
 - [Setup](#setup)
 - [HTTP Client Configuration](#http-client-configuration)
-- [Route Discovery](#route-discovery)
+- [Route Resolution](#route-resolution)
 - [Service Proxies & JSON-RPC Calls](#service-proxies--json-rpc-calls)
 - [ViewModel Hierarchy](#viewmodel-hierarchy)
   - [VMBase](#vmbase)
@@ -78,18 +78,50 @@ The client includes:
 
 ---
 
-## Route Discovery
+## Route Resolution
 
-`RouteRegistry` discovers all available JSON-RPC routes by fetching the server's `/apiContract` endpoint. This must be called once before making any RPC calls.
+`RouteRegistry` resolves JSON-RPC routes using two strategies:
+
+### Convention-based routing (default, no setup required)
+
+When your fsLib server uses `@RpcBindingRoute` (the default since fsLib 3.x), routes follow a predictable convention:
+
+```
+/rpc/{serviceName}.{methodName}
+```
+
+For example, `ITaskService.apiList` resolves to `/rpc/ITaskService.apiList`. This works out of the box -- **no `discover()` call needed**. Just set `AppApi.urlBase` and start making calls.
+
+```kotlin
+AppApi.urlBase = "http://10.0.2.2:8080"
+
+// This works immediately -- no discover() required
+val result = taskServiceProxy.apiList(apiList)
+```
+
+You can customize the route prefix if your server uses a different one:
+
+```kotlin
+routeRegistry.routePrefix = "/api/v2"  // default is "/rpc"
+```
+
+### Optional: API contract discovery
+
+Calling `discover()` fetches the server's `/apiContract` endpoint and caches all service routes. Discovered routes take priority over convention-based routes.
+
+Use `discover()` when you need to:
+- **Validate the server's API version** via `expectedVersion`
+- **Support servers with counter-based routes** (legacy Kilua RPC without `@RpcBindingRoute`)
+- **Inspect available services/methods** at runtime (e.g., display version info in the UI)
 
 ```kotlin
 import com.fonrouge.fslib.android.commonServices.routeRegistry
 
-// Discover routes (call once, e.g., on a connect screen)
-routeRegistry.discover()
-
 // Optional: validate server version
-routeRegistry.expectedVersion = "1.0.0"
+routeRegistry.expectedVersion = "1"
+
+// Discover and cache routes (optional for @RpcBindingRoute servers)
+routeRegistry.discover()
 
 // Check discovery state
 routeRegistry.isDiscovered  // true after successful discover()
@@ -97,7 +129,7 @@ routeRegistry.version       // server-reported version
 routeRegistry.protocol      // protocol info from contract
 ```
 
-Route discovery is thread-safe (uses Mutex internally). If a route lookup fails after discovery, the library automatically attempts re-discovery once before throwing.
+Discovery is thread-safe (uses Mutex internally). If discovery has been called and a cached route is not found, the convention fallback is used.
 
 ---
 

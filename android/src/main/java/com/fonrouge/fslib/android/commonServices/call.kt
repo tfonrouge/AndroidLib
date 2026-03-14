@@ -95,10 +95,10 @@ suspend inline fun <A : Any, reified P1, reified P2, reified P3, reified RET : A
 ))
 
 /**
- * Makes a JSON-RPC 2.0 remote call using discovered routes from [RouteRegistry].
+ * Makes a JSON-RPC 2.0 remote call using routes from [RouteRegistry].
  *
- * If the route lookup fails and discovery has already happened, automatically
- * attempts re-discovery once before giving up.
+ * If [RouteRegistry.discover] has been called, uses cached routes from the API contract.
+ * Otherwise, uses convention-based routes (`/rpc/{serviceName}.{methodName}`).
  */
 @Suppress("unused")
 suspend inline fun <A : Any, reified RET : Any> A.remoteCall(
@@ -106,15 +106,7 @@ suspend inline fun <A : Any, reified RET : Any> A.remoteCall(
     params: List<String?>,
 ): RET {
     val serviceName = resolveServiceName()
-    val resolvedRoute = try {
-        routeRegistry.getRoute(serviceName, functionName)
-    } catch (e: IllegalStateException) {
-        if (routeRegistry.isDiscovered) {
-            routeRegistry.rediscoverAndGetRoute(serviceName, functionName)
-        } else {
-            throw e
-        }
-    }
+    val resolvedRoute = routeRegistry.getRoute(serviceName, functionName)
     val url = "${appApi.urlBase}$resolvedRoute"
 
     val rpcRequest = JsonRpcRequest(

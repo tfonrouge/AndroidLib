@@ -1,6 +1,6 @@
 # fslib-android
 
-Android client SDK for [fsLib](https://github.com/tfonrouge/fsLib) (Full-Stack Lib). Provides MVVM ViewModels, Compose UI components, a type-safe JSON-RPC 2.0 client with automatic route discovery, and optional barcode scanning -- everything needed to build Android apps against an fsLib backend.
+Android client SDK for [fsLib](https://github.com/tfonrouge/fsLib) (Full-Stack Lib). Provides MVVM ViewModels, Compose UI components, a type-safe JSON-RPC 2.0 client with convention-based routing, and optional barcode scanning -- everything needed to build Android apps against an fsLib backend.
 
 ## Modules
 
@@ -33,16 +33,7 @@ import com.fonrouge.fslib.android.commonServices.AppApi
 AppApi.urlBase = "http://10.0.2.2:8080"
 ```
 
-### 2. Discover API routes
-
-```kotlin
-import com.fonrouge.fslib.android.commonServices.routeRegistry
-
-// Call once at startup (e.g., in a connect screen)
-routeRegistry.discover()
-```
-
-### 3. Define a service proxy
+### 2. Define a service proxy
 
 ```kotlin
 import com.fonrouge.fslib.android.commonServices.IServiceProxy
@@ -59,7 +50,7 @@ class TaskServiceProxy : IServiceProxy {
 }
 ```
 
-### 4. Create ViewModels
+### 3. Create ViewModels
 
 ```kotlin
 private val taskService = TaskServiceProxy()
@@ -79,7 +70,7 @@ class TaskItemViewModel : VMItem<CommonTask, Task, String, TaskFilter>(
 )
 ```
 
-### 5. Build Compose screens
+### 4. Build Compose screens
 
 ```kotlin
 @Composable
@@ -112,7 +103,7 @@ See the [Usage Guide](USAGE-GUIDE.md) for detailed documentation and the [`sampl
 ├─────────────────────────────────────────────────┤
 │  Ktor HTTP Client (Android/CIO/OkHttp engines)  │
 └─────────────────────────────────────────────────┘
-         ↕ /apiContract discovery
+         ↕ /rpc/{service}.{method}
 ┌─────────────────────────────────────────────────┐
 │  fsLib Backend (Ktor server + @RpcService)       │
 └─────────────────────────────────────────────────┘
@@ -120,7 +111,7 @@ See the [Usage Guide](USAGE-GUIDE.md) for detailed documentation and the [`sampl
 
 ### Key Concepts
 
-- **JSON-RPC 2.0 with route discovery** -- `RouteRegistry` fetches the server's `/apiContract` endpoint once, caching all service routes. The `call()` extension function resolves method names automatically from the call stack.
+- **JSON-RPC 2.0 with convention-based routing** -- Routes follow the `/rpc/{serviceName}.{methodName}` convention by default. The `call()` extension function resolves method names automatically from the call stack. Optional `/apiContract` discovery is available for version validation or servers with non-standard routes.
 - **Two-phase CRUD** -- `VMItem` uses a Query phase (fetch/validate) followed by an Action phase (save/delete), matching fsLib's server-side pattern.
 - **Type-safe generics** -- `ICommonContainer<T, ID, FILT>` provides compile-time validation of document types, ID types, and filter types across navigation, serialization, and API calls.
 - **Injectable globals** -- `appApi` and `routeRegistry` can be swapped for testing.

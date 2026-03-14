@@ -45,7 +45,7 @@ Dependencies on external library: `com.fonrouge.fslib:core` (models, API interfa
 - `ScanBarcodeScreen` — Router composable (GMS or CameraX)
 
 ### JSON-RPC 2.0 Remote Calling (`commonServices/`)
-- `RouteRegistry` — Injectable class that discovers RPC routes from `/apiContract` endpoint. Thread-safe via Mutex. Supports version validation and auto re-discovery on stale routes.
+- `RouteRegistry` — Resolves RPC routes via convention (`/rpc/{service}.{method}`) by default. Optional `/apiContract` discovery for version validation or counter-based routes. Thread-safe via Mutex.
 - `IServiceProxy` — Interface for explicit service name mapping (decouples Android class names from server interface names).
 - `call()` / `remoteCall()` — Inline extension functions for type-safe JSON-RPC calls. Method names resolved automatically from the call stack via `callerMethodName()`.
 - `AppApi` — Singleton Ktor client with configurable engine (Android/CIO/OkHttp), retry with exponential backoff, cookie support, JSON content negotiation, configurable log level.
