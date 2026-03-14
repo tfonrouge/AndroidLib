@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Shadow protection guard now fails at configuration time instead of execution time, for configuration-cache compatibility.
+- Signing tasks are disabled for local publishes (`-PSNAPSHOT` / `-PFORCE_LOCAL`) to avoid unnecessary GPG overhead and configuration-cache issues.
+
 ### Removed
 - Removed `:app` demo module — the `:samples:showcase-android` module serves as the integration test and reference app.
 

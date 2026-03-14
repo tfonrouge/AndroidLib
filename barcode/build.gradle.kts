@@ -137,18 +137,21 @@ project.afterEvaluate {
     }
 }
 
+val isSnapshotPublish = hasProperty("SNAPSHOT")
+val isForceLocal = hasProperty("FORCE_LOCAL")
+
 // Prevent publishing release versions to mavenLocal — this would silently shadow
 // Maven Central artifacts for every project on the machine that uses mavenLocal().
-tasks.withType<PublishToMavenLocal> {
-    doFirst {
-        if (!project.hasProperty("SNAPSHOT") && !project.hasProperty("FORCE_LOCAL")) {
-            error(
-                "Publishing release version $publishVersion to mavenLocal is blocked to prevent " +
-                    "shadowing Maven Central artifacts.\n" +
-                    "  Use: ./gradlew publishToMavenLocal -PSNAPSHOT  (recommended)\n" +
-                    "  Or:  ./gradlew publishToMavenLocal -PFORCE_LOCAL  (override safety check)"
-            )
-        }
+// Fail at configuration time (not execution time) to stay compatible with the
+// configuration cache, which cannot serialize script object references in doFirst lambdas.
+if (gradle.startParameter.taskNames.any { it.contains("publishToMavenLocal", ignoreCase = true) }) {
+    if (!isSnapshotPublish && !isForceLocal) {
+        error(
+            "Publishing release version $publishVersion to mavenLocal is blocked to prevent " +
+                "shadowing Maven Central artifacts.\n" +
+                "  Use: ./gradlew publishToMavenLocal -PSNAPSHOT  (recommended)\n" +
+                "  Or:  ./gradlew publishToMavenLocal -PFORCE_LOCAL  (override safety check)"
+        )
     }
 }
 
@@ -156,4 +159,13 @@ signing {
     useGpgCmd()
     isRequired = findProperty("signing.gnupg.keyName") != null
     sign(publishing.publications)
+}
+
+// Disable signing for local publishes. The signing plugin's internal actions access
+// Task.project at execution time, which is incompatible with the configuration cache.
+// Signing is unnecessary for mavenLocal artifacts.
+if (isSnapshotPublish || isForceLocal) {
+    tasks.withType<Sign> {
+        enabled = false
+    }
 }
