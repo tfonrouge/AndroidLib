@@ -1,5 +1,6 @@
 package com.example.showcase
 
+import com.fonrouge.androidLib.commonServices.IServiceProxy
 import com.fonrouge.androidLib.commonServices.call
 import com.fonrouge.base.api.ApiList
 import com.fonrouge.base.api.IApiItem
@@ -12,15 +13,16 @@ import com.fonrouge.base.state.ListState
  * Implements [ITaskServiceContract] from showcase-lib for compile-time
  * validation that method signatures match the server's @RpcService interface.
  *
- * The class name "ITaskService" must match the service interface name
- * used on the server, since [RouteRegistry] looks up routes by
- * `serviceName.methodName`.
+ * The [serviceName] explicitly maps to the server-side interface name,
+ * decoupling this class's name from the route lookup.
  */
-class ITaskService : ITaskServiceContract {
+class TaskServiceProxy : ITaskServiceContract, IServiceProxy {
+
+    override val serviceName: String = "ITaskService"
 
     override suspend fun apiList(apiList: ApiList<TaskFilter>): ListState<Task> =
-        call("apiList", apiList)
+        call(apiList)
 
     override suspend fun apiItem(iApiItem: IApiItem<Task, String, TaskFilter>): ItemState<Task> =
-        call("apiItem", iApiItem)
+        call(iApiItem)
 }

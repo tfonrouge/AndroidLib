@@ -1,9 +1,11 @@
 package com.example.showcase
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,29 +17,30 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -46,6 +49,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.fonrouge.androidLib.commonServices.AppApi
+import com.fonrouge.androidLib.commonServices.routeRegistry
+import com.fonrouge.androidLib.configCommon.composableItem
+import com.fonrouge.androidLib.configCommon.navigateCreateItem
+import com.fonrouge.androidLib.configCommon.navigateItem
+import com.fonrouge.androidLib.ui.BodyList
+import com.fonrouge.androidLib.ui.ScreenConfirmAlert
+import com.fonrouge.androidLib.ui.ScreenList
+import com.fonrouge.androidLib.ui.ScreenStateAlert
+import com.fonrouge.androidLib.ui.pullRefreshState
+import com.fonrouge.base.api.ApiItem
+import com.fonrouge.base.api.CrudTask
+import kotlinx.coroutines.launch
 
 class ShowcaseActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,73 +79,40 @@ class ShowcaseActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShowcaseApp(vm: TaskListViewModel = viewModel()) {
-    val state by vm.uiState.collectAsState()
+fun ShowcaseApp() {
+    val navController = rememberNavController()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text("Showcase Sample")
-                        state.contractVersion?.let {
-                            Text(
-                                text = "API contract v$it",
-                                style = MaterialTheme.typography.labelSmall,
-                            )
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                ),
-                actions = {
-                    if (state.contractVersion != null) {
-                        IconButton(onClick = { vm.refresh() }) {
-                            Icon(Icons.Default.Refresh, contentDescription = "Refresh")
-                        }
-                    }
-                },
-            )
+    NavHost(navController = navController, startDestination = "connect") {
+        composable("connect") {
+            ConnectScreen(navController)
         }
-    ) { padding ->
-        Column(modifier = Modifier.padding(padding)) {
-            if (state.contractVersion == null && !state.isDiscovering) {
-                ConnectPanel(onConnect = { vm.connectAndLoad(it) })
-            }
-
-            if (state.isDiscovering) {
-                StatusMessage("Discovering API contract...")
-            }
-
-            if (state.isLoading) {
-                StatusMessage("Loading tasks...")
-            }
-
-            state.error?.let { error ->
-                Text(
-                    text = error,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(16.dp),
-                )
-            }
-
-            if (state.tasks.isNotEmpty()) {
-                TaskList(tasks = state.tasks)
-            }
+        composable("taskList") {
+            TaskListScreen(navController)
+        }
+        composableItem(CommonTask) { apiItem ->
+            TaskItemScreen(
+                navHostController = navController,
+                apiItem = apiItem,
+            )
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ConnectPanel(onConnect: (String) -> Unit) {
+fun ConnectScreen(navController: NavHostController) {
     var serverUrl by rememberSaveable { mutableStateOf("http://10.0.2.2:8080") }
+    var isDiscovering by rememberSaveable { mutableStateOf(false) }
+    var error by rememberSaveable { mutableStateOf<String?>(null) }
+    val scope = rememberCoroutineScope()
 
     Column(
-        modifier = Modifier.padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = "Connect to FSLib showcase backend",
@@ -136,57 +123,113 @@ fun ConnectPanel(onConnect: (String) -> Unit) {
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        Spacer(Modifier.height(16.dp))
         OutlinedTextField(
             value = serverUrl,
             onValueChange = { serverUrl = it },
             label = { Text("Server URL") },
             singleLine = true,
+            enabled = !isDiscovering,
             modifier = Modifier.fillMaxWidth(),
         )
+        Spacer(Modifier.height(8.dp))
         Button(
-            onClick = { onConnect(serverUrl) },
+            onClick = {
+                scope.launch {
+                    isDiscovering = true
+                    error = null
+                    AppApi.urlBase = serverUrl
+                    try {
+                        routeRegistry.discover()
+                        Log.d("Showcase", "Contract discovered: v${routeRegistry.version}")
+                        navController.navigate("taskList") {
+                            popUpTo("connect") { inclusive = true }
+                        }
+                    } catch (e: Exception) {
+                        Log.e("Showcase", "Discovery failed: ${e.message}", e)
+                        error = e.message ?: "Unknown error"
+                    } finally {
+                        isDiscovering = false
+                    }
+                }
+            },
+            enabled = !isDiscovering,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text("Discover & Connect")
+            if (isDiscovering) {
+                CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+            } else {
+                Text("Discover & Connect")
+            }
+        }
+        error?.let {
+            Spacer(Modifier.height(8.dp))
+            Text(text = it, color = MaterialTheme.colorScheme.error)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TaskListScreen(
+    navController: NavHostController,
+    vmList: TaskListViewModel = viewModel(),
+) {
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
+    ScreenList<TaskListViewModel, CommonTask, Task, String, TaskFilter>(
+        navHostController = navController,
+        vmList = vmList,
+        drawerState = drawerState,
+        topBarTitle = {
+            Column {
+                Text("Showcase Sample")
+                routeRegistry.version?.let {
+                    Text(
+                        text = "API contract v$it",
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+                }
+            }
+        },
+        topBarNavigationIcon = {},
+        topBarActions = {
+            IconButton(onClick = { vmList.requestRefresh = true }) {
+                Icon(Icons.Default.Refresh, contentDescription = "Refresh")
+            }
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { CommonTask.navigateCreateItem(navController) }
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "New Task")
+            }
+        },
+    ) { task ->
+        task?.let {
+            TaskCard(
+                task = it,
+                onClick = {
+                    CommonTask.navigateItem(
+                        navHostController = navController,
+                        apiItem = ApiItem.Query.Update(
+                            id = it._id,
+                            apiFilter = vmList.apiFilter,
+                        ),
+                    )
+                },
+            )
         }
     }
 }
 
 @Composable
-fun StatusMessage(text: String) {
-    Box(
+fun TaskCard(task: Task, onClick: (() -> Unit)? = null) {
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(32.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-            Text(text)
-        }
-    }
-}
-
-@Composable
-fun TaskList(tasks: List<Task>) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
-    ) {
-        items(tasks, key = { it._id }) { task ->
-            TaskCard(task)
-        }
-    }
-}
-
-@Composable
-fun TaskCard(task: Task) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .let { m -> onClick?.let { m.clickable(onClick = it) } ?: m },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

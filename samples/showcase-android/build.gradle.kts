@@ -47,7 +47,9 @@ android {
 
 dependencies {
     implementation(project(":androidLib"))
-    implementation("com.example:showcase-lib:1.0.0-SNAPSHOT")
+    implementation("com.example:showcase-lib:1.0.0-SNAPSHOT") {
+        exclude(group = "com.fonrouge.fslib", module = "core-jvm")
+    }
     implementation(libs.slf4j.android)
 
     implementation(libs.androidx.core.ktx)
@@ -60,6 +62,9 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.material.icons.extended)
     implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.navigation.compose)
+    implementation(libs.paging.compose)
+    implementation(libs.compose.material3.pullrefresh)
 
     implementation(libs.google.guava)
 

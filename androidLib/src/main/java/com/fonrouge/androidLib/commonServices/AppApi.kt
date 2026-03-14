@@ -12,6 +12,7 @@ import io.ktor.client.engine.android.Android
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.UserAgent
 import io.ktor.client.plugins.auth.Auth
@@ -77,6 +78,11 @@ object AppApi : IAppApi {
                         requestTimeoutMillis = 15000
                         connectTimeoutMillis = 15000
                         socketTimeoutMillis = 15000
+                    }
+                    install(HttpRequestRetry) {
+                        retryOnServerErrors(maxRetries = 3)
+                        retryOnException(maxRetries = 3, retryOnTimeout = true)
+                        exponentialDelay()
                     }
                 }
             }
