@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.serialization)
     id("maven-publish")
+    signing
 }
 
 android {
@@ -82,6 +83,10 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 }
 
+val javadocJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
+}
+
 project.afterEvaluate {
     publishing {
         publications {
@@ -93,7 +98,52 @@ project.afterEvaluate {
                 afterEvaluate {
                     from(components["release"])
                 }
+
+                artifact(javadocJar)
+
+                pom {
+                    name.set("FSLib Android")
+                    description.set(
+                        "Android client SDK for fsLib — MVVM ViewModels, Compose UI components, " +
+                            "type-safe JSON-RPC 2.0 client with automatic route discovery"
+                    )
+                    url.set("https://github.com/tfonrouge/fslib-android")
+
+                    licenses {
+                        license {
+                            name.set("MIT License")
+                            url.set("https://opensource.org/licenses/MIT")
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id.set("tfonrouge")
+                            name.set("Teo Fonrouge")
+                            url.set("https://github.com/tfonrouge")
+                        }
+                    }
+
+                    scm {
+                        connection.set("scm:git:git://github.com/tfonrouge/fslib-android.git")
+                        developerConnection.set("scm:git:ssh://github.com/tfonrouge/fslib-android.git")
+                        url.set("https://github.com/tfonrouge/fslib-android")
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                name = "Staging"
+                url = uri(rootProject.layout.buildDirectory.dir("staging-deploy"))
             }
         }
     }
+}
+
+signing {
+    useGpgCmd()
+    isRequired = findProperty("signing.gnupg.keyName") != null
+    sign(publishing.publications)
 }
