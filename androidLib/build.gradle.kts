@@ -40,22 +40,18 @@ android {
     buildFeatures {
         compose = true
     }
-//        resources.excludes.add("META-INF/**")
-//    }
     publishing {
         singleVariant("release") {
             withSourcesJar()
-//            withJavadocJar()
         }
     }
 }
 
 dependencies {
-    api(libs.fonrouge.base)
+    api(libs.fslib.core)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-//    implementation(libs.androidx.appcompat)
     implementation(libs.ui.tooling.preview)
     implementation(libs.material)
     implementation(libs.material3)
@@ -89,10 +85,11 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
     testImplementation(libs.mockk)
+    testImplementation(libs.ktor.client.mock)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-//     solves: Could not resolve com.google.guava:listenablefuture:1.0
+    // Resolves transitive com.google.guava:listenablefuture:1.0 conflict
     implementation(libs.google.guava)
 }
 

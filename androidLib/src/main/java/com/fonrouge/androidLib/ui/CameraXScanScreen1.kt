@@ -28,7 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +52,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fonrouge.androidLib.viewModel.VMCamera
 import com.fonrouge.androidlib.R
@@ -70,15 +71,18 @@ fun CameraXCoreReaderScreen1(
     content: @Composable () -> Unit,
 ) {
     val cameraPermissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
+    val uiState by vmCamera.uiState.collectAsStateWithLifecycle()
+    val barcodeCamera by vmCamera.barcodeCamera.collectAsStateWithLifecycle()
+
     if (cameraPermissionState.status.isGranted) {
-        if (vmCamera.uiState.collectAsState().value.scannerOpen) {
+        if (uiState.scannerOpen) {
             MainContent(
                 vmCamera = vmCamera,
                 onReadBarcode = onReadBarcode,
                 onFilter = onFilter,
             )
         } else {
-            vmCamera.barcodeCamera.value.toggleFlash(false)
+            barcodeCamera.toggleFlash(false)
             content()
         }
     } else {
@@ -91,15 +95,16 @@ fun CameraXCoreReaderScreen1(
 private fun MainContent(
     vmCamera: VMCamera,
     onReadBarcode: (CodeEntry) -> Unit = {},
-
     onFilter: ((Barcode) -> Boolean)? = null,
 ) {
+    val barcodeCamera by vmCamera.barcodeCamera.collectAsStateWithLifecycle()
+    val torchState by vmCamera.torchState.collectAsStateWithLifecycle()
+
     Box {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .zIndex(2f),
-//        contentAlignment = Alignment.BottomCenter
         ) {
             Box(
                 modifier = Modifier
@@ -113,7 +118,6 @@ private fun MainContent(
 
                         drawRect(Color(0x99000000))
 
-                        // Draws the rectangle in the middle
                         drawRoundRect(
                             topLeft = Offset(
                                 (canvasWidth - width) / 2,
@@ -125,7 +129,6 @@ private fun MainContent(
                             blendMode = BlendMode.SrcIn
                         )
 
-                        // Draws the rectangle outline
                         drawRoundRect(
                             topLeft = Offset(
                                 (canvasWidth - width) / 2,
@@ -141,45 +144,16 @@ private fun MainContent(
                         )
                     }
             ) {
-                vmCamera.barcodeCamera.value.CameraPreview(
+                barcodeCamera.CameraPreview(
                     vmCamera,
                     onReadBarcode,
                     onFilter
                 )
-                /*
-                                Column(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                ) {
-                                    Text(
-                                        text = "Lector de Código de Barras",
-                                        style = MaterialTheme.typography.titleLarge,
-                                        color = Color.White,
-                                    )
-                                    Spacer(modifier = Modifier.size(20.dp))
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.End
-                                    ) {
-                                        Image(
-                                            painter = if (torch) painterResource(id = R.drawable.ic_torch_on) else painterResource(
-                                                id = R.drawable.ic_torch
-                                            ),
-                                            contentDescription = null,
-                                            modifier = Modifier
-                                                .clickable {
-                                                    torch = !torch
-                                                    barcodeCamera.toggleFlash(torch)
-                                                },
-                                        )
-                                    }
-                                }
-                */
             }
         }
     }
     CameraScreen1(vmCamera = vmCamera, onReadBarcode = onReadBarcode)
-    vmCamera.barcodeCamera.value.toggleFlash(vmCamera.torchState.value)
+    barcodeCamera.toggleFlash(torchState)
 }
 
 @androidx.annotation.OptIn(ExperimentalGetImage::class)
@@ -191,11 +165,15 @@ fun CameraScreen1(
 ) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
+    val manualEntry by vmCamera.manualEntry.collectAsStateWithLifecycle()
+    val torchState by vmCamera.torchState.collectAsStateWithLifecycle()
+    val barcodeCamera by vmCamera.barcodeCamera.collectAsStateWithLifecycle()
+
     val doManualEntry = {
         onReadBarcode(
             CodeEntry(
                 source = CodeEntry.Type.Keyboard,
-                code = vmCamera.manualEntry.value
+                code = manualEntry
             )
         )
         vmCamera.onEvent(VMCamera.UIEvent.ManualEntry)
@@ -219,9 +197,9 @@ fun CameraScreen1(
             ) {
                 IconButton(
                     onClick = {
-                        vmCamera.torchState.value = false
-                        vmCamera.barcodeCamera.value.toggleFlash(false)
-                        Log.d("TORCH 2", vmCamera.barcodeCamera.value.torchState.toString())
+                        vmCamera.setTorchState(false)
+                        barcodeCamera.toggleFlash(false)
+                        Log.d("TORCH 2", barcodeCamera.torchState.toString())
                         vmCamera.onEvent(VMCamera.UIEvent.Close)
                     }
                 ) {
@@ -238,15 +216,15 @@ fun CameraScreen1(
                 )
                 IconButton(
                     onClick = {
-                        vmCamera.torchState.value = !vmCamera.torchState.value
-                        vmCamera.barcodeCamera.value.toggleFlash(vmCamera.torchState.value)
-                        Log.d("TORCH", vmCamera.barcodeCamera.value.torchState.toString())
+                        vmCamera.setTorchState(!torchState)
+                        barcodeCamera.toggleFlash(!torchState)
+                        Log.d("TORCH", barcodeCamera.torchState.toString())
                     }
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_torch),
                         contentDescription = null,
-                        tint = if (vmCamera.torchState.value) Color.Yellow else Color.White
+                        tint = if (torchState) Color.Yellow else Color.White
                     )
                 }
             }
@@ -257,10 +235,8 @@ fun CameraScreen1(
             var showTextField by remember { mutableStateOf(false) }
             if (showTextField) {
                 TextField(
-                    value = vmCamera.manualEntry.value,
-                    onValueChange = {
-                        vmCamera.manualEntry.value = it
-                    },
+                    value = manualEntry,
+                    onValueChange = { vmCamera.setManualEntry(it) },
                     modifier = Modifier
                         .focusRequester(focusRequester),
                     keyboardOptions = KeyboardOptions(
@@ -274,13 +250,13 @@ fun CameraScreen1(
                         }
                     ),
                     trailingIcon = {
-                        if (vmCamera.manualEntry.value.isNotEmpty()) {
+                        if (manualEntry.isNotEmpty()) {
                             Row {
                                 Icon(
                                     imageVector = Icons.Default.Clear,
                                     contentDescription = null,
                                     modifier = Modifier.clickable {
-                                        vmCamera.manualEntry.value = ""
+                                        vmCamera.setManualEntry("")
                                     }
                                 )
                                 Icon(
@@ -298,7 +274,6 @@ fun CameraScreen1(
             Button(
                 onClick = {
                     showTextField = !showTextField
-//                    focusRequester.requestFocus()
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {

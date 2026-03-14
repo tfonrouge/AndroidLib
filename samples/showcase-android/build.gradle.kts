@@ -47,9 +47,7 @@ android {
 
 dependencies {
     implementation(project(":androidLib"))
-    implementation("com.example:showcase-lib:1.0.0-SNAPSHOT") {
-        exclude(group = "com.fonrouge.fslib", module = "core-jvm")
-    }
+    implementation("com.example:showcase-lib:1.0.0-SNAPSHOT")
     implementation(libs.slf4j.android)
 
     implementation(libs.androidx.core.ktx)

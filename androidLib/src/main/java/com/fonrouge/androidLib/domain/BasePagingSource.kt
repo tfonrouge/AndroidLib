@@ -30,7 +30,7 @@ class BasePagingSource<CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID :
                 prevKey = if (nextPage == 1) null else nextPage - 1,
                 nextKey = listState.last_page?.let { if (nextPage < it) nextPage + 1 else null }
             )
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             vmList.pushSimpleState(SimpleState(isOk = false, msgError = e.localizedMessage))
             return LoadResult.Error(e)
         } finally {

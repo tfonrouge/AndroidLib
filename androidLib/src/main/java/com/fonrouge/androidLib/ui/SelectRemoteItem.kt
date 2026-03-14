@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.fonrouge.base.model.BaseDoc
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -70,14 +71,16 @@ fun <T : BaseDoc<ID>, ID : Any> SelectRemoteItem(
         modifier = modifier
     ) {
         val coroutineScope = rememberCoroutineScope()
+        var searchJob by remember { mutableStateOf<Job?>(null) }
         TextField(
             value = fieldValue,
             onValueChange = { search ->
                 fieldValue = search
+                searchJob?.cancel()
                 if (fieldValue.isBlank()) {
                     mutableItemList.value = emptyList()
                 } else {
-                    coroutineScope.launch {
+                    searchJob = coroutineScope.launch {
                         delay(1000)
                         mutableItemList.value = selectorFun(itemSet.map { it._id }.toSet(), search)
                     }

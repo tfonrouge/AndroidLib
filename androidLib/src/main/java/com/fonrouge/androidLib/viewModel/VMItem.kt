@@ -70,7 +70,12 @@ abstract class VMItem<CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : 
                 )
             }
 
-            CrudTask.Delete -> TODO()
+            CrudTask.Delete -> serializedId?.let {
+                ApiItem.Query.Delete(
+                    id = id,
+                    apiFilter = apiFilter,
+                )
+            }
         }
         apiItem ?: run {
             SimpleState(

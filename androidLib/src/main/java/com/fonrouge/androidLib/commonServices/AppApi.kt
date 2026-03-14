@@ -37,7 +37,9 @@ object AppApi : IAppApi {
     var serializedIUser: String? = null
     var engine: Engine? = null  // uses engine default
     override var delayBeforeRequest: Int = 0
-    private var _httpClient: HttpClient? = null
+    var logLevel: LogLevel = LogLevel.HEADERS
+    @Volatile private var _httpClient: HttpClient? = null
+    private val clientLock = Any()
 
     private fun getEngine(
         engine: Engine?,
@@ -53,8 +55,10 @@ object AppApi : IAppApi {
 
     override val client: HttpClient
         get() {
-            if (_httpClient == null) {
-                _httpClient = getEngine(engine) {
+            val existing = _httpClient
+            if (existing != null) return existing
+            return synchronized(clientLock) {
+                _httpClient ?: getEngine(engine) {
                     install(Auth)
                     install(ContentNegotiation) {
                         json()
@@ -67,7 +71,7 @@ object AppApi : IAppApi {
                         contentType(ContentType.Application.Json)
                     }
                     install(Logging) {
-                        level = LogLevel.ALL
+                        level = logLevel
                         logger = object : Logger {
                             override fun log(message: String) {
                                 Log.i("HttpClient", message)
@@ -84,9 +88,8 @@ object AppApi : IAppApi {
                         retryOnException(maxRetries = 3, retryOnTimeout = true)
                         exponentialDelay()
                     }
-                }
+                }.also { _httpClient = it }
             }
-            return _httpClient!!
         }
 
     override val logged get() = serializedIUser != null

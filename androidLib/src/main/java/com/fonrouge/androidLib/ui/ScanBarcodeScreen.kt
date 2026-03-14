@@ -1,6 +1,8 @@
 package com.fonrouge.androidLib.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fonrouge.androidLib.viewModel.VMCamera
 import com.google.mlkit.vision.barcode.common.Barcode
 
@@ -11,7 +13,8 @@ fun ScanBarcodeScreen(
     onFilter: ((Barcode) -> Boolean)? = null,
     content: @Composable () -> Unit,
 ) {
-    when (vmCamera.selectedCameraType.value) {
+    val cameraType by vmCamera.selectedCameraType.collectAsStateWithLifecycle()
+    when (cameraType) {
         VMCamera.CameraType.GooglePlay -> {
             GmsScanScreen(
                 vmCamera = vmCamera,

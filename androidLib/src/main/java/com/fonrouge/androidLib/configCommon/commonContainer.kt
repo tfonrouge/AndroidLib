@@ -28,10 +28,11 @@ fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiF
     navBackStackEntry: NavBackStackEntry,
     function: @Composable (apiItem: ApiItem.Query<T, ID, FILT>) -> Unit,
 ) {
-    val iApiItem = navBackStackEntry.arguments?.getString("apiItem")?.let {
-        if (it != "\"null\"") Json.decodeFromString(
+    val iApiItem = navBackStackEntry.arguments?.getString("apiItem")?.let { raw ->
+        val decoded = Uri.decode(raw).removeSurrounding("\"")
+        if (decoded != "null") Json.decodeFromString(
             IApiItem.Query.serializer(itemSerializer, idSerializer, apiFilterSerializer),
-            it.removePrefix("\"").removeSuffix("\"")
+            decoded
         ) else null
     }
     val apiItem = iApiItem?.asApiItem(cc = this, call = null) as? ApiItem.Query<T, ID, FILT>
@@ -43,8 +44,9 @@ fun <CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : Any, FILT : IApiF
     navBackStackEntry: NavBackStackEntry,
     function: @Composable (apiFilter: FILT) -> Unit,
 ) {
-    val serializedApiFilter =
-        navBackStackEntry.arguments?.getString("apiFilter")?.removePrefix("\"")?.removeSuffix("\"")
+    val serializedApiFilter = navBackStackEntry.arguments?.getString("apiFilter")?.let { raw ->
+        Uri.decode(raw).removeSurrounding("\"")
+    }
     function(
         serializedApiFilter?.let {
             Json.decodeFromString(

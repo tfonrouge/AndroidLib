@@ -1,10 +1,7 @@
 package com.fonrouge.androidLib.barcode
 
-import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.Context
-import android.net.Uri
-import android.provider.MediaStore
 import android.util.Log
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -14,7 +11,6 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -32,13 +28,12 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
-import java.text.SimpleDateFormat
-import java.util.Locale
 import java.util.concurrent.Executors
 
 class BarcodeCamera {
 
     private var camera: Camera? = null
+    private var analysisExecutor: java.util.concurrent.ExecutorService? = null
 
     val torchState: Boolean get() = camera?.cameraInfo?.torchState?.value?.let { it != 0 } ?: false
 
@@ -107,7 +102,9 @@ class BarcodeCamera {
                     it.surfaceProvider = previewView.surfaceProvider
                 }
 
+            analysisExecutor?.shutdown()
             val executor = Executors.newSingleThreadExecutor()
+            analysisExecutor = executor
 
             val imageAnalysis = ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
@@ -169,6 +166,11 @@ class BarcodeCamera {
         camera?.cameraControl?.enableTorch(isOn)
     }
 
+    fun shutdown() {
+        analysisExecutor?.shutdown()
+        analysisExecutor = null
+    }
+
     @ExperimentalGetImage
     private fun processImageProxy(
         barcodeScanner: BarcodeScanner,
@@ -212,43 +214,4 @@ class BarcodeCamera {
         }
     }
 
-    fun takePhoto(
-        context: Context,
-        imageCapture: ImageCapture,
-        onSuccess: (Uri) -> Unit,
-    ) {
-        val name = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            .format(System.currentTimeMillis())
-
-        val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
-            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
-        }
-
-        val outputOptions = ImageCapture.OutputFileOptions
-            .Builder(
-                context.contentResolver,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                contentValues
-            )
-            .build()
-
-        imageCapture.takePicture(
-            outputOptions,
-            ContextCompat.getMainExecutor(context),
-            object : ImageCapture.OnImageSavedCallback {
-                override fun onError(exc: ImageCaptureException) {
-                    Log.e("CameraX", "Photo capture failed: ${exc.message}", exc)
-                }
-
-                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val msg = "Photo capture succeeded"
-                    Log.d("CameraX", msg)
-
-                    output.savedUri?.let { onSuccess(it) }
-                }
-            }
-        )
-    }
 }

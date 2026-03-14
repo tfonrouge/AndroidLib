@@ -15,12 +15,16 @@ fun PeriodicUpdateList(
 ) {
     periodicUpdate?.let { vmList.periodicUpdate = it }
     periodicInterval?.let { vmList.periodicInterval = it }
-    val refreshListCounter by vmList.refreshListCounterFlow.collectAsStateWithLifecycle()
-    LaunchedEffect(key1 = refreshListCounter) {
-        delay(vmList.periodicInterval.toLong())
-        if (vmList.periodicUpdate) {
-            ++vmList.refreshListCounter
-            vmList.requestRefresh = true
+    val enabled = vmList.periodicUpdate
+    val interval = vmList.periodicInterval
+
+    LaunchedEffect(enabled, interval) {
+        if (!enabled) return@LaunchedEffect
+        while (true) {
+            delay(interval.toLong())
+            if (vmList.periodicUpdate) {
+                vmList.requestRefresh = true
+            }
         }
     }
 }

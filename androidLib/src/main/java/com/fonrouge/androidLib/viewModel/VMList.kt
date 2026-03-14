@@ -33,9 +33,7 @@ abstract class VMList<CC : ICommonContainer<T, ID, FILT>, T : BaseDoc<ID>, ID : 
     val listStateFun: KSuspendFunction1<ApiList<FILT>, ListState<T>>,
     val itemStateFun: KSuspendFunction1<IApiItem<T, ID, FILT>, ItemState<T>>? = null,
 ) : VMContainer<CC, T, ID, FILT>() {
-    companion object {
-        var lastRequest: Long = 0L
-    }
+    var lastRequest: Long = 0L
 
     private val _apiFilter = MutableStateFlow(
         Json.decodeFromString(

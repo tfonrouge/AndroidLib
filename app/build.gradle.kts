@@ -49,9 +49,6 @@ android {
 
 dependencies {
     implementation(project(":androidLib"))
-    implementation(libs.fonrouge.arellib) {
-        exclude(group = "com.fonrouge.fsLib")
-    }
     implementation(libs.slf4j.android)
 
     implementation(libs.androidx.core.ktx)

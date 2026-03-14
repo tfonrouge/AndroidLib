@@ -7,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
@@ -33,10 +33,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -58,13 +61,9 @@ import com.fonrouge.androidLib.commonServices.routeRegistry
 import com.fonrouge.androidLib.configCommon.composableItem
 import com.fonrouge.androidLib.configCommon.navigateCreateItem
 import com.fonrouge.androidLib.configCommon.navigateItem
-import com.fonrouge.androidLib.ui.BodyList
-import com.fonrouge.androidLib.ui.ScreenConfirmAlert
+import com.fonrouge.androidLib.ui.DismissBackgroundDelete
 import com.fonrouge.androidLib.ui.ScreenList
-import com.fonrouge.androidLib.ui.ScreenStateAlert
-import com.fonrouge.androidLib.ui.pullRefreshState
 import com.fonrouge.base.api.ApiItem
-import com.fonrouge.base.api.CrudTask
 import kotlinx.coroutines.launch
 
 class ShowcaseActivity : ComponentActivity() {
@@ -176,6 +175,7 @@ fun TaskListScreen(
     vmList: TaskListViewModel = viewModel(),
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
 
     ScreenList<TaskListViewModel, CommonTask, Task, String, TaskFilter>(
         navHostController = navController,
@@ -194,6 +194,9 @@ fun TaskListScreen(
         },
         topBarNavigationIcon = {},
         topBarActions = {
+            IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                Icon(Icons.Default.FilterList, contentDescription = "Filter")
+            }
             IconButton(onClick = { vmList.requestRefresh = true }) {
                 Icon(Icons.Default.Refresh, contentDescription = "Refresh")
             }
@@ -205,10 +208,14 @@ fun TaskListScreen(
                 Icon(Icons.Default.Add, contentDescription = "New Task")
             }
         },
+        modalNavigationDrawerContent = {
+            TaskFilterDrawer(drawerState = drawerState, vmList = vmList)
+        },
     ) { task ->
         task?.let {
-            TaskCard(
+            SwipeableTaskCard(
                 task = it,
+                vmList = vmList,
                 onClick = {
                     CommonTask.navigateItem(
                         navHostController = navController,
@@ -220,6 +227,46 @@ fun TaskListScreen(
                 },
             )
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SwipeableTaskCard(
+    task: Task,
+    vmList: TaskListViewModel,
+    onClick: () -> Unit,
+) {
+    val scope = rememberCoroutineScope()
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { value ->
+            if (value == SwipeToDismissBoxValue.EndToStart) {
+                vmList.pushConfirmAlert(
+                    confirmText = "Delete task \"${task.title}\"?",
+                    onConfirm = {
+                        scope.launch {
+                            vmList.deleteItem(task)
+                            vmList.requestRefresh = true
+                        }
+                    },
+                )
+                false // don't dismiss yet, wait for confirm
+            } else {
+                false
+            }
+        }
+    )
+    SwipeToDismissBox(
+        state = dismissState,
+        backgroundContent = {
+            DismissBackgroundDelete(
+                dismissState = dismissState,
+                dismissDirection = SwipeToDismissBoxValue.EndToStart,
+            )
+        },
+        enableDismissFromStartToEnd = false,
+    ) {
+        TaskCard(task = task, onClick = onClick)
     }
 }
 
