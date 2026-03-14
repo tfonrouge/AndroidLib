@@ -23,7 +23,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build and test
-        run: ./gradlew :android:test :android:assemble :barcode:test :barcode:assemble :app:assembleDebug :samples:showcase-android:assembleDebug
+        run: ./gradlew :android:test :android:assemble :barcode:test :barcode:assemble :samples:showcase-android:assembleDebug
 
   snapshot-compat:
     if: github.event_name == 'pull_request'

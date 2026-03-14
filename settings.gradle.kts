@@ -25,7 +25,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "fslib-android"
-include(":app")
 include(":android")
 include(":barcode")
 include(":samples:showcase-android")

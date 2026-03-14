@@ -130,10 +130,10 @@ See the [Usage Guide](USAGE-GUIDE.md) for detailed documentation and the [`sampl
 ## Building from Source
 
 ```bash
-./gradlew build                   # Full build
-./gradlew :android:test           # Unit tests
-./gradlew :barcode:test           # Barcode module tests
-./gradlew :app:assembleDebug      # Demo app
+./gradlew build                                     # Full build
+./gradlew :android:test                              # Unit tests
+./gradlew :barcode:test                              # Barcode module tests
+./gradlew :samples:showcase-android:assembleDebug    # Showcase sample
 ```
 
 ## Publishing

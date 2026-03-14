@@ -7,7 +7,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Multi-module Android library project:
 - **`:android`** — Reusable Android library (MVVM ViewModels, Compose UI components, Ktor HTTP client, JSON-RPC 2.0). Published as `com.fonrouge.fslib:android:2.0.0`.
 - **`:barcode`** — Optional barcode scanning module (CameraX, ML Kit, GMS code scanner). Published as `com.fonrouge.fslib:barcode:2.0.0`.
-- **`:app`** — Demo/test application consuming the library.
 - **`:samples:showcase-android`** — Reference app demonstrating full integration with an fsLib backend (route discovery, paginated lists, CRUD forms).
 
 Dependencies on external library: `com.fonrouge.fslib:core` (models, API interfaces, state).
@@ -16,17 +15,14 @@ Dependencies on external library: `com.fonrouge.fslib:core` (models, API interfa
 
 ```bash
 ./gradlew build                    # Full build
-./gradlew :app:assembleDebug       # Debug APK
-./gradlew :app:installDebug        # Install debug APK to device
 ./gradlew :android:assemble        # Build library AAR
 ./gradlew :barcode:assemble        # Build barcode AAR
 ./gradlew test                     # Unit tests
 ./gradlew connectedAndroidTest     # Instrumented tests
 ./gradlew lint                     # Android Lint
 
-# Publish library to Maven Local
-./gradlew :android:publishReleasePublicationToMavenLocalRepository
-./gradlew :barcode:publishReleasePublicationToMavenLocalRepository
+# Publish snapshot to Maven Local
+./gradlew publishToMavenLocal -PSNAPSHOT
 ```
 
 ## Architecture
