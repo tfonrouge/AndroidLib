@@ -72,6 +72,12 @@ dependencies {
     testImplementation(libs.mockk)
 }
 
+// Append "-SNAPSHOT" when -PSNAPSHOT is passed.
+// Usage: ./gradlew publishToMavenLocal -PSNAPSHOT
+val publishVersion = libs.versions.fslibAndroid.get().let { base ->
+    if (hasProperty("SNAPSHOT") && !base.endsWith("-SNAPSHOT")) "$base-SNAPSHOT" else base
+}
+
 val javadocJar by tasks.registering(Jar::class) {
     archiveClassifier.set("javadoc")
 }
@@ -82,7 +88,7 @@ project.afterEvaluate {
             register<MavenPublication>("release") {
                 groupId = "com.fonrouge.fslib"
                 artifactId = "barcode"
-                version = libs.versions.fslibAndroid.get()
+                version = publishVersion
 
                 afterEvaluate {
                     from(components["release"])

@@ -48,6 +48,12 @@ android {
     }
 }
 
+// Append "-SNAPSHOT" when -PSNAPSHOT is passed.
+// Usage: ./gradlew publishToMavenLocal -PSNAPSHOT
+val publishVersion = libs.versions.fslibAndroid.get().let { base ->
+    if (hasProperty("SNAPSHOT") && !base.endsWith("-SNAPSHOT")) "$base-SNAPSHOT" else base
+}
+
 val fslibOverride = findProperty("fslibVersion") as? String
 
 dependencies {
@@ -93,7 +99,7 @@ project.afterEvaluate {
             register<MavenPublication>("release") {
                 groupId = "com.fonrouge.fslib"
                 artifactId = "android"
-                version = libs.versions.fslibAndroid.get()
+                version = publishVersion
 
                 afterEvaluate {
                     from(components["release"])
